@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -7,15 +7,12 @@
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    html, body, #root { margin: 0; padding: 0; min-height: 100vh; background: #080a0f; }
-  </style>
+  <style>html, body, #root { margin: 0; padding: 0; min-height: 100vh; background: #080a0f; }</style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     const { useState } = React;
-
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
 const TIERS = {
@@ -31,13 +28,20 @@ const STATUSES = {
 };
 
 const SECTIONS = [
-  { id:"assets",     number:"01", title:"Assets",                  items:[
-    {id:"a1",label:"Logo principale in SVG"},
-    {id:"a2",label:"Variante monocromatica (bianco/nero)"},
-    {id:"a3",label:"Favicon o simbolo standalone"},
-    {id:"a4",label:"Versione orizzontale e verticale"},
-    {id:"a5",label:"Necessita di icone/illustrazioni custom da gestire in backend?"},
-  ]},
+  { id:"assets",     number:"01", title:"Assets",
+    items:[
+      {id:"a1",label:"Logo principale in SVG"},
+      {id:"a2",label:"Variante monocromatica (bianco/nero)"},
+      {id:"a3",label:"Favicon o simbolo standalone"},
+      {id:"a4",label:"Versione orizzontale e verticale"},
+    ],
+    radioGroups:[
+      { id:"rg_assets_custom", label:"Necessita di icone/illustrazioni custom da gestire in backend?", options:[
+        {id:"rg_assets_custom_si", label:"Sì"},
+        {id:"rg_assets_custom_no", label:"No"},
+      ]},
+    ]
+  },
   { id:"palette",    number:"02", title:"Palette Colori",          items:[
     {id:"p1",label:"Colore primario (hex + token)"},
     {id:"p2",label:"Colore secondario"},
@@ -147,7 +151,7 @@ const DEMO = {
   checklist:{
     checked:Object.fromEntries(ALL_IDS.map(id=>[id,true])),
     tier:"gold",
-    radios:{ rg_angoli:"rg_angoli_arrot", rg_densita:"rg_densita_default", rg_spacing_custom:"rg_spacing_custom_no", rg_concordato:"rg_concordato_si", rg_lingua:"rg_lingua_it", rg_icone_custom:"rg_icone_custom_no" },
+    radios:{ rg_assets_custom:"rg_assets_custom_no", rg_angoli:"rg_angoli_arrot", rg_densita:"rg_densita_default", rg_spacing_custom:"rg_spacing_custom_no", rg_concordato:"rg_concordato_si", rg_lingua:"rg_lingua_it", rg_icone_custom:"rg_icone_custom_no" },
   },
 };
 
@@ -1095,7 +1099,6 @@ const css = `
   input::placeholder { color: #64748b; }
   input:focus { border-color: rgba(167,139,250,0.5) !important; outline: none; }
 `;
-
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
