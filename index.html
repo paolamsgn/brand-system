@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brand System — Design System Governance</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    html, body, #root { margin: 0; padding: 0; min-height: 100vh; background: #080a0f; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+
+const TIERS = {
+  gold:   { label:"Gold",   emoji:"🥇", color:"#C9A84C", bg:"rgba(201,168,76,0.1)",  dim:"rgba(201,168,76,0.06)" },
+  silver: { label:"Silver", emoji:"🥈", color:"#94a3b8", bg:"rgba(148,163,184,0.1)", dim:"rgba(148,163,184,0.06)" },
+  bronze: { label:"Bronze", emoji:"🥉", color:"#cd7f5a", bg:"rgba(205,127,90,0.1)",  dim:"rgba(205,127,90,0.06)" },
+};
+
+const STATUSES = {
+  draft:    { label:"Draft",     color:"#64748b", bg:"rgba(100,116,139,0.15)" },
+  inreview: { label:"In Review", color:"#a78bfa", bg:"rgba(167,139,250,0.15)" },
+  active:   { label:"Active",    color:"#34d399", bg:"rgba(52,211,153,0.15)"  },
+};
+
+const SECTIONS = [
+  { id:"assets",     number:"01", title:"Assets",                  items:[
+    {id:"a1",label:"Logo principale in SVG"},
+    {id:"a2",label:"Variante monocromatica (bianco/nero)"},
+    {id:"a3",label:"Favicon o simbolo standalone"},
+    {id:"a4",label:"Versione orizzontale e verticale"},
+    {id:"a5",label:"Necessita di icone/illustrazioni custom da gestire in backend?"},
+  ]},
+  { id:"palette",    number:"02", title:"Palette Colori",          items:[
+    {id:"p1",label:"Colore primario (hex + token)"},
+    {id:"p2",label:"Colore secondario"},
+    {id:"p3",label:"Colore accent"},
+    {id:"p4",label:"Varianti dark/light per ciascun colore"},
+    {id:"p5",label:"Colori neutri (background, surface, border)"},
+    {id:"p6",label:"Necessita di un colore custom terziario?"},
+  ]},
+  { id:"icons",      number:"03", title:"Iconografia",
+    items:[
+      {id:"i1",label:"Set di icone definito (outline / filled / duotone)"},
+      {id:"i2",label:"Stile coerente col brand"},
+      {id:"i3",label:"Formato SVG o icon font"},
+    ],
+    radioGroups:[
+      { id:"rg_icone_custom", label:"Icone custom necessarie?", options:[
+        {id:"rg_icone_custom_si", label:"Sì"},
+        {id:"rg_icone_custom_no", label:"No"},
+      ]},
+    ]
+  },
+  { id:"tier",       number:"04", title:"Tier del Brand", isTier:true,
+    items:[],
+    radioGroups:[
+      { id:"rg_concordato", label:"Livello di personalizzazione concordato col cliente", options:[
+        {id:"rg_concordato_si",  label:"Sì"},
+        {id:"rg_concordato_no",  label:"Non ancora"},
+      ]},
+    ]
+  },
+  { id:"typography", number:"05", title:"Tipografia",              items:[
+    {id:"ty1",label:"Font primario (heading)"},
+    {id:"ty2",label:"Font secondario (body/UI)"},
+    {id:"ty3",label:"Fallback web-safe definito"},
+    {id:"ty4",label:"Licenza d'uso verificata"},
+    {id:"ty5",label:"Scala tipografica concordata"},
+  ]},
+  { id:"voice",      number:"06", title:"Tono e Voce",
+    items:[
+      {id:"v1",label:"Brand voice definita (formale / informale / tecnica)"},
+      {id:"v4",label:"Claim o payoff ufficiale"},
+    ],
+    radioGroups:[
+      { id:"rg_lingua", label:"Lingua principale dell'interfaccia", options:[
+        {id:"rg_lingua_it",    label:"Italiano"},
+        {id:"rg_lingua_iten",  label:"Italiano / Inglese"},
+        {id:"rg_lingua_en",    label:"Inglese"},
+      ]},
+    ]
+  },
+  { id:"spacing",    number:"07", title:"Spaziature e Radius",
+    items:[],
+    radioGroups:[
+      { id:"rg_angoli", label:"Preferenza angoli", options:[
+        {id:"rg_angoli_netti", label:"Netti"},
+        {id:"rg_angoli_arrot", label:"Arrotondati"},
+        {id:"rg_angoli_molto", label:"Molto arrotondati"},
+      ]},
+      { id:"rg_densita", label:"Densità UI", options:[
+        {id:"rg_densita_compact", label:"Compact"},
+        {id:"rg_densita_default", label:"Default"},
+        {id:"rg_densita_comfort", label:"Comfortable"},
+      ]},
+      { id:"rg_spacing_custom", label:"Necessita di spacing scale custom?", options:[
+        {id:"rg_spacing_custom_yes", label:"Sì"},
+        {id:"rg_spacing_custom_no",  label:"No"},
+      ]},
+    ]
+  },
+  { id:"components", number:"08", title:"Componenti Prioritari",   items:[
+    {id:"c1",label:"Button"},
+    {id:"c2",label:"Card"},
+    {id:"c3",label:"Navigation / Header"},
+    {id:"c4",label:"Form elements"},
+    {id:"c5",label:"Altri componenti custom"},
+  ]},
+  { id:"darkmode",   number:"09", title:"Dark Mode",               items:[
+    {id:"d1",label:"Il brand supporta la dark mode?"},
+    {id:"d2",label:"Palette dark dedicata o generata automaticamente?"},
+    {id:"d3",label:"Contrasto WCAG verificato in entrambe le modalità?"},
+  ]},
+  { id:"deliverable",number:"10", title:"Deliverable e Owner",     items:[
+    {id:"o1",label:"Brand guideline PDF disponibile?"},
+    {id:"o2",label:"Figma file condiviso?"},
+    {id:"o3",label:"Chi approva gli asset definitivi?"},
+    {id:"o4",label:"Referente lato cliente identificato"},
+  ]},
+];
+
+const ALL_IDS = SECTIONS.flatMap(s => s.items.map(i => i.id));
+const ALL_RADIO_GROUPS = SECTIONS.flatMap(s => (s.radioGroups||[]).map(rg => rg.id));
+const TOTAL_ITEMS = ALL_IDS.length + ALL_RADIO_GROUPS.length + 1; // +1 for tier
+
+const emptyChecklist = () => ({ checked:{}, tier:null, radios:{} });
+
+function calcProgress(cl) {
+  if (!cl) return 0;
+  const checkedDone = Object.values(cl.checked||{}).filter(Boolean).length;
+  const radioDone   = ALL_RADIO_GROUPS.filter(id => cl.radios?.[id]).length;
+  return Math.round(((checkedDone + radioDone + (cl.tier?1:0)) / TOTAL_ITEMS) * 100);
+}
+
+const DEMO = {
+  id:1, name:"✨ Lumina", tier:"gold", status:"active",
+  owner:"Design System Team", note:"Brand di esempio. Palette navy + oro.",
+  createdAt:"2026-03-01",
+  checklist:{
+    checked:Object.fromEntries(ALL_IDS.map(id=>[id,true])),
+    tier:"gold",
+    radios:{ rg_angoli:"rg_angoli_arrot", rg_densita:"rg_densita_default", rg_spacing_custom:"rg_spacing_custom_no", rg_concordato:"rg_concordato_si", rg_lingua:"rg_lingua_it", rg_icone_custom:"rg_icone_custom_no" },
+  },
+};
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [brands, setBrands]     = useState([DEMO]);
+  const [view, setView]         = useState("new"); // "new" | "checklist" | "registry"
+  const [activeId, setActiveId] = useState(null);
+  const [confirmDel, setConfirmDel] = useState(null);
+
+  const active = brands.find(b => b.id === activeId) || null;
+
+  const openBrand  = id => { setActiveId(id); setView("checklist"); };
+  const goNew      = () => { setActiveId(null); setView("new"); };
+  const goRegistry = () => setView("registry");
+
+  const saveNew = data => {
+    const b = { id:Date.now(), ...data, createdAt:new Date().toISOString().slice(0,10) };
+    setBrands(p => [...p, b]);
+    setActiveId(b.id); setView("checklist");
+  };
+
+  const patchCL = (id, patch) =>
+    setBrands(p => p.map(b => b.id===id ? {...b,checklist:{...b.checklist,...patch}} : b));
+
+  const patchBrand = (id, patch) =>
+    setBrands(p => p.map(b => b.id===id ? {...b,...patch} : b));
+
+  const delBrand = id => {
+    setBrands(p => p.filter(b => b.id!==id));
+    setConfirmDel(null);
+    if (activeId===id) goNew();
+  };
+
+  const activeCount  = brands.filter(b=>b.status==="active").length;
+  const reviewCount  = brands.filter(b=>b.status==="inreview").length;
+  const draftCount   = brands.filter(b=>b.status==="draft").length;
+
+  return (
+    <div style={s.shell}>
+      <style>{css}</style>
+
+      {/* ── SIDEBAR ── */}
+      <aside style={s.sidebar}>
+        {/* Logo */}
+        <div style={s.sideTop}>
+          <div style={s.brand}>
+            <span style={s.brandIcon}>◈</span>
+            <div>
+              <div style={s.brandName}>Brand System</div>
+              <div style={s.brandSub}>Design System Governance</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav style={s.nav}>
+          <div style={s.navSection}>BRAND</div>
+          <SideItem icon="+" label="Nuovo brand"   active={view==="new"}      onClick={goNew} />
+          <SideItem icon="≡" label="Registro brand" active={view==="registry"} onClick={goRegistry}
+            badge={brands.length} />
+
+          {brands.length > 0 && (
+            <>
+              <div style={{...s.navSection, marginTop:16}}>BRANDS</div>
+              {brands.map(b => (
+                <SideItem key={b.id} icon={TIERS[b.tier].emoji} label={b.name}
+                  active={view==="checklist" && activeId===b.id}
+                  onClick={() => openBrand(b.id)}
+                  badge={calcProgress(b.checklist) + "%"}
+                  badgeColor={calcProgress(b.checklist)===100 ? "#34d399" : calcProgress(b.checklist)>0 ? "#fb923c" : undefined}
+                />
+              ))}
+            </>
+          )}
+
+          <div style={{...s.navSection, marginTop:16}}>STATO</div>
+          <div style={s.statRow}><span style={{color:"#34d399"}}>●</span> Active <span style={s.statBadge}>{activeCount}</span></div>
+          <div style={s.statRow}><span style={{color:"#a78bfa"}}>●</span> In Review <span style={s.statBadge}>{reviewCount}</span></div>
+          <div style={s.statRow}><span style={{color:"#64748b"}}>●</span> Draft <span style={s.statBadge}>{draftCount}</span></div>
+        </nav>
+
+        <div style={s.sideBottom}>
+          <div style={s.syncDot}/>
+          <span style={s.syncLabel}>{brands.length} brand · {brands.filter(b=>calcProgress(b.checklist)===100).length} completati</span>
+        </div>
+      </aside>
+
+      {/* ── MAIN ── */}
+      <div style={s.main}>
+        {/* Top bar */}
+        <header style={s.topbar}>
+          <div style={s.topbarLeft}>
+            <span style={s.topbarTitle}>
+              {view==="new"       && "Nuovo brand"}
+              {view==="registry"  && "Registro brand"}
+              {view==="checklist" && active?.name}
+            </span>
+            {view==="checklist" && active && (
+              <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                <Pill color={TIERS[active.tier].color} bg={TIERS[active.tier].bg}>
+                  {TIERS[active.tier].emoji} {TIERS[active.tier].label}
+                </Pill>
+                <Pill color={STATUSES[active.status].color} bg={STATUSES[active.status].bg}>
+                  {STATUSES[active.status].label}
+                </Pill>
+              </div>
+            )}
+          </div>
+          <div style={s.topbarRight}>
+            {view==="checklist" && active && (
+              <>
+                <div style={s.syncStatus}>
+                  <div style={{...s.syncDot, background:"#34d399"}}/>
+                  {calcProgress(active.checklist)}% completato
+                </div>
+                <button className="tb-btn danger" onClick={()=>setConfirmDel(active.id)}>Elimina</button>
+              </>
+            )}
+            {view==="registry" && (
+              <button className="tb-btn primary" onClick={goNew}>+ Nuovo brand</button>
+            )}
+            {view==="new" && (
+              <div style={s.syncStatus}>
+                <div style={{...s.syncDot, background:"#a78bfa"}}/>
+                Bozza in corso
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Content */}
+        <div style={s.content}>
+          {view==="new"       && <NewView onSave={saveNew} />}
+          {view==="checklist" && active && <ChecklistView brand={active} onPatch={patchCL} onPatchBrand={patchBrand} onGoRegistry={goRegistry} />}
+          {view==="registry"  && <RegistryView brands={brands} onOpen={openBrand} onDelete={id=>setConfirmDel(id)} onNew={goNew} />}
+        </div>
+      </div>
+
+      {/* Delete modal */}
+      {confirmDel && (
+        <Overlay onClose={()=>setConfirmDel(null)}>
+          <div style={s.modalTitle}>Eliminare questo brand?</div>
+          <div style={s.modalSub}>L'operazione non è reversibile.</div>
+          <div style={s.modalFoot}>
+            <button className="tb-btn" onClick={()=>setConfirmDel(null)}>Annulla</button>
+            <button className="tb-btn danger" onClick={()=>delBrand(confirmDel)}>Elimina</button>
+          </div>
+        </Overlay>
+      )}
+    </div>
+  );
+}
+
+// ─── NEW VIEW ─────────────────────────────────────────────────────────────────
+
+function NewView({ onSave }) {
+  const [name,   setName]   = useState("");
+  const [tier,   setTier]   = useState("silver");
+  const [owner,  setOwner]  = useState("");
+  const [note,   setNote]   = useState("");
+  const [status, setStatus] = useState("draft");
+  const [cl, setCL]         = useState(emptyChecklist());
+
+  const pct = calcProgress(cl);
+  const isOk = pct === 100;
+  const bt   = TIERS[tier];
+
+  const patch       = p => setCL(prev => ({...prev,...p}));
+  const toggleItem  = id => patch({ checked:{...cl.checked,[id]:!cl.checked[id]} });
+  const setChkTier  = t  => patch({ tier:cl.tier===t?null:t });
+  const setRadio    = (groupId, optId) => patch({ radios:{...cl.radios,[groupId]: cl.radios?.[groupId]===optId ? null : optId} });
+  const selectAll   = () => patch({
+    checked:Object.fromEntries(ALL_IDS.map(id=>[id,true])),
+    tier:tier,
+    radios:Object.fromEntries(ALL_RADIO_GROUPS.map(id=>{
+      const sec = SECTIONS.find(s=>(s.radioGroups||[]).find(rg=>rg.id===id));
+      const rg  = sec?.radioGroups?.find(rg=>rg.id===id);
+      return [id, rg?.options[0]?.id || null];
+    })),
+  });
+  const clearAll    = () => patch({ checked:{}, tier:null, radios:{} });
+  const toggleSec   = sec => {
+    const ids  = sec.items.map(i=>i.id);
+    const allOn= ids.every(id=>cl.checked[id]);
+    const next = {...cl.checked};
+    ids.forEach(id=>next[id]=!allOn);
+    patch({checked:next});
+  };
+
+  return (
+    <div style={p.wrap}>
+      {/* Meta card */}
+      <div style={p.metaCard}>
+        <div style={p.metaGrid}>
+          <div style={p.metaField}>
+            <label style={p.fieldLabel}>Nome brand</label>
+            <input style={p.input} placeholder="es. ✨ Lumina"
+              value={name} onChange={e=>setName(e.target.value)} autoFocus />
+          </div>
+          <div style={p.metaField}>
+            <label style={p.fieldLabel}>Owner</label>
+            <input style={p.input} placeholder="es. Design System Team"
+              value={owner} onChange={e=>setOwner(e.target.value)} />
+          </div>
+          <div style={p.metaField}>
+            <label style={p.fieldLabel}>Status iniziale</label>
+            <div style={{display:"flex",gap:6}}>
+              {Object.entries(STATUSES).map(([k,st])=>(
+                <button key={k} className={`seg-btn ${status===k?"active":""}`}
+                  style={status===k?{borderColor:st.color,color:st.color,background:st.bg}:{}}
+                  onClick={()=>setStatus(k)}>
+                  {st.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={p.metaField}>
+            <label style={p.fieldLabel}>Note</label>
+            <input style={p.input} placeholder="Link asset, info..."
+              value={note} onChange={e=>setNote(e.target.value)} />
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div style={p.progressRow}>
+          <div style={p.progressTrack}>
+            <div style={{...p.progressFill, width:`${pct}%`,
+              background:isOk?"linear-gradient(90deg,#34d399,#059669)":`linear-gradient(90deg,${bt.color},${bt.color}88)`}}/>
+          </div>
+          <span style={p.pctLabel}>{isOk?"✓ Completo":`${pct}%`}</span>
+          <div style={{display:"flex",gap:6}}>
+            <button className="tb-btn" onClick={selectAll}>Seleziona tutto</button>
+            <button className="tb-btn" onClick={clearAll}>Cancella</button>
+          </div>
+          <button className="tb-btn primary" onClick={()=>onSave({name,tier,owner,note,status,checklist:cl})}
+            style={!name.trim()?{opacity:.3,pointerEvents:"none"}:{}}>
+            {isOk ? "Salva nel registro →" : "Salva come incompleto →"}
+          </button>
+        </div>
+      </div>
+
+      <div style={p.sections}>
+        {SECTIONS.map(sec => <Section key={sec.id} section={sec} cl={cl}
+          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setChkTier} onSetRadio={setRadio} />)}
+        {isOk
+          ? <CompleteBanner name={name} onAction={()=>onSave({name,tier,owner,note,status,checklist:cl})}
+              actionLabel="Salva nel registro →" disabled={!name.trim()} />
+          : name.trim() && pct>0 && (
+            <div style={{display:"flex",alignItems:"center",gap:16,background:"rgba(251,146,60,0.06)",
+              border:"1px solid rgba(251,146,60,0.2)",borderRadius:10,padding:"16px 20px",flexWrap:"wrap"}}>
+              <span style={{fontSize:22,color:"#fb923c"}}>⚠</span>
+              <div>
+                <div style={{fontSize:15,fontWeight:700,color:"#fb923c",marginBottom:3}}>Checklist incompleta</div>
+                <div style={{fontSize:13,color:"#94a3b8"}}>Puoi comunque salvare il brand — verrà marcato come incompleto nel registro.</div>
+              </div>
+              <button className="tb-btn" style={{marginLeft:"auto",borderColor:"rgba(251,146,60,0.4)",color:"#fb923c"}}
+                onClick={()=>onSave({name,tier,owner,note,status,checklist:cl})} disabled={!name.trim()}>
+                Salva come incompleto →
+              </button>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  );
+}
+
+// ─── CHECKLIST VIEW ───────────────────────────────────────────────────────────
+
+function ChecklistView({ brand, onPatch, onPatchBrand, onGoRegistry }) {
+  const { checklist:cl } = brand;
+  const [editOpen, setEditOpen] = useState(false);
+  const [name,   setName]   = useState(brand.name);
+  const [owner,  setOwner]  = useState(brand.owner||"");
+  const [note,   setNote]   = useState(brand.note||"");
+  const [status, setStatus] = useState(brand.status);
+
+  // sync local state if brand changes (e.g. switching brand)
+  const [lastId, setLastId] = useState(brand.id);
+  if (brand.id !== lastId) {
+    setLastId(brand.id);
+    setName(brand.name); setOwner(brand.owner||""); setNote(brand.note||""); setStatus(brand.status);
+    setEditOpen(false);
+  }
+
+  const bt  = TIERS[brand.tier];
+  const pct = calcProgress(cl);
+  const isOk= pct===100;
+
+  const patch      = pp => onPatch(brand.id, pp);
+  const toggleItem = id => patch({checked:{...cl.checked,[id]:!cl.checked[id]}});
+  const setTier    = t  => patch({tier:cl.tier===t?null:t});
+  const setRadio   = (groupId, optId) => patch({ radios:{...cl.radios,[groupId]: cl.radios?.[groupId]===optId ? null : optId} });
+  const selectAll  = () => patch({
+    checked:Object.fromEntries(ALL_IDS.map(id=>[id,true])),
+    tier:cl.tier||brand.tier,
+    radios:Object.fromEntries(ALL_RADIO_GROUPS.map(id=>{
+      const sec = SECTIONS.find(s=>(s.radioGroups||[]).find(rg=>rg.id===id));
+      const rg  = sec?.radioGroups?.find(rg=>rg.id===id);
+      return [id, rg?.options[0]?.id || null];
+    })),
+  });
+  const clearAll   = () => patch({checked:{},tier:null,radios:{}});
+  const toggleSec  = sec => {
+    const ids=sec.items.map(i=>i.id),allOn=ids.every(id=>cl.checked[id]),next={...cl.checked};
+    ids.forEach(id=>next[id]=!allOn); patch({checked:next});
+  };
+
+  const saveEdit = () => {
+    onPatchBrand(brand.id, { name:name.trim()||brand.name, owner, note, status });
+    setEditOpen(false);
+  };
+
+  return (
+    <div style={p.wrap}>
+      <div style={p.metaCard}>
+        {/* Meta row — always visible */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom: editOpen ? 16 : 12}}>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+              <span style={{fontSize:16,fontWeight:700,color:"#f8fafc"}}>{brand.name}</span>
+              <Pill color={bt.color} bg={bt.bg}>{bt.emoji} {bt.label}</Pill>
+              <Pill color={STATUSES[brand.status].color} bg={STATUSES[brand.status].bg}>
+                {STATUSES[brand.status].label}
+              </Pill>
+            </div>
+            {(brand.owner||brand.note) && (
+              <div style={{display:"flex",gap:16,fontSize:13,color:"#94a3b8"}}>
+                {brand.owner && <span>👤 {brand.owner}</span>}
+                {brand.note  && <span style={{opacity:.8}}>— {brand.note}</span>}
+              </div>
+            )}
+          </div>
+          <button className="tb-btn" style={{flexShrink:0}}
+            onClick={()=>setEditOpen(o=>!o)}>
+            {editOpen ? "✕ Chiudi" : "✎ Modifica info"}
+          </button>
+        </div>
+
+        {/* Inline edit form */}
+        {editOpen && (
+          <div style={{borderTop:"1px solid rgba(255,255,255,0.08)",paddingTop:16,marginBottom:16}}>
+            <div style={p.metaGrid}>
+              <div style={p.metaField}>
+                <label style={p.fieldLabel}>Nome brand</label>
+                <input style={p.input} value={name} onChange={e=>setName(e.target.value)} />
+              </div>
+              <div style={p.metaField}>
+                <label style={p.fieldLabel}>Owner</label>
+                <input style={p.input} placeholder="es. Design System Team"
+                  value={owner} onChange={e=>setOwner(e.target.value)} />
+              </div>
+              <div style={p.metaField}>
+                <label style={p.fieldLabel}>Status</label>
+                <div style={{display:"flex",gap:6}}>
+                  {Object.entries(STATUSES).map(([k,st])=>(
+                    <button key={k} className={`seg-btn ${status===k?"active":""}`}
+                      style={status===k?{borderColor:st.color,color:st.color,background:st.bg}:{}}
+                      onClick={()=>setStatus(k)}>
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={p.metaField}>
+                <label style={p.fieldLabel}>Note</label>
+                <input style={p.input} placeholder="Link asset, info..."
+                  value={note} onChange={e=>setNote(e.target.value)} />
+              </div>
+            </div>
+            <div style={{display:"flex",justifyContent:"flex-end",gap:8}}>
+              <button className="tb-btn" onClick={()=>setEditOpen(false)}>Annulla</button>
+              <button className="tb-btn primary" onClick={saveEdit}>Salva modifiche</button>
+            </div>
+          </div>
+        )}
+
+        {/* Progress row */}
+        <div style={p.progressRow}>
+          <div style={p.progressTrack}>
+            <div style={{...p.progressFill,width:`${pct}%`,
+              background:isOk?"linear-gradient(90deg,#34d399,#059669)":`linear-gradient(90deg,${bt.color},${bt.color}88)`}}/>
+          </div>
+          <span style={p.pctLabel}>{isOk?"✓ Completo":`${pct}%`}</span>
+          <button className="tb-btn" onClick={selectAll}>Seleziona tutto</button>
+          <button className="tb-btn" onClick={clearAll}>Cancella</button>
+          {isOk && <button className="tb-btn primary" onClick={onGoRegistry}>Vai al registro →</button>}
+        </div>
+      </div>
+
+      <div style={p.sections}>
+        {SECTIONS.map(sec => <Section key={sec.id} section={sec} cl={cl}
+          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setTier} onSetRadio={setRadio} />)}
+        {isOk && <CompleteBanner name={brand.name} onAction={onGoRegistry} actionLabel="Vai al registro →" />}
+      </div>
+    </div>
+  );
+}
+
+// ─── REGISTRY VIEW ────────────────────────────────────────────────────────────
+
+function RegistryView({ brands, onOpen, onDelete, onNew }) {
+  const [search, setSearch]         = useState("");
+  const [fTier, setFTier]           = useState("all");
+  const [fStatus, setFStatus]       = useState("all");
+  const [fIncomplete, setFIncomplete] = useState(false);
+
+  const cnt = {
+    all:brands.length,
+    active:brands.filter(b=>b.status==="active").length,
+    inreview:brands.filter(b=>b.status==="inreview").length,
+    draft:brands.filter(b=>b.status==="draft").length,
+    incomplete:brands.filter(b=>calcProgress(b.checklist)<100).length,
+    gold:brands.filter(b=>b.tier==="gold").length,
+    silver:brands.filter(b=>b.tier==="silver").length,
+    bronze:brands.filter(b=>b.tier==="bronze").length,
+  };
+
+  const filtered = brands.filter(b=>{
+    if (fTier!=="all"   && b.tier!==fTier)     return false;
+    if (fStatus!=="all" && b.status!==fStatus) return false;
+    if (fIncomplete && calcProgress(b.checklist)===100) return false;
+    if (search && !b.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  return (
+    <div style={r.wrap}>
+      {/* Stat cards */}
+      <div style={r.statGrid}>
+        {[
+          {label:"Totale",      val:cnt.all,        color:"#e2e8f0"},
+          {label:"Active",      val:cnt.active,     color:"#34d399"},
+          {label:"In Review",   val:cnt.inreview,   color:"#a78bfa"},
+          {label:"Draft",       val:cnt.draft,      color:"#64748b"},
+          {label:"⚠ Incompleto",val:cnt.incomplete, color:"#fb923c"},
+          {label:"🥇 Gold",     val:cnt.gold,       color:"#C9A84C"},
+          {label:"🥈 Silver",   val:cnt.silver,     color:"#94a3b8"},
+          {label:"🥉 Bronze",   val:cnt.bronze,     color:"#cd7f5a"},
+        ].map(st=>(
+          <div key={st.label} style={r.statCard}>
+            <div style={{...r.statVal, color:st.color}}>{st.val}</div>
+            <div style={r.statLabel}>{st.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={r.toolbar}>
+        <input style={r.search} placeholder="Cerca brand..."
+          value={search} onChange={e=>setSearch(e.target.value)} />
+        <div style={r.filterGroup}>
+          <span style={r.filterCap}>Tier</span>
+          {["all","gold","silver","bronze"].map(t=>(
+            <button key={t} className={`filter-btn ${fTier===t?"on":""}`}
+              style={fTier===t&&t!=="all"?{borderColor:TIERS[t].color,color:TIERS[t].color,background:TIERS[t].dim}:{}}
+              onClick={()=>setFTier(t)}>
+              {t==="all"?"Tutti":`${TIERS[t].emoji} ${TIERS[t].label}`}
+            </button>
+          ))}
+          <span style={{...r.filterCap,marginLeft:8}}>Status</span>
+          {["all","draft","inreview","active"].map(st=>(
+            <button key={st} className={`filter-btn ${fStatus===st?"on":""}`}
+              style={fStatus===st&&st!=="all"?{borderColor:STATUSES[st].color,color:STATUSES[st].color,background:STATUSES[st].bg}:{}}
+              onClick={()=>setFStatus(st)}>
+              {st==="all"?"Tutti":STATUSES[st].label}
+            </button>
+          ))}
+          <button className={`filter-btn ${fIncomplete?"on":""}`}
+            style={fIncomplete?{borderColor:"#fb923c",color:"#fb923c",background:"rgba(251,146,60,0.1)"}:{}}
+            onClick={()=>setFIncomplete(v=>!v)}>
+            ⚠ Incompleti
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
+      {filtered.length===0 ? (
+        <div style={r.empty}>
+          <div style={r.emptyIcon}>◎</div>
+          <div style={r.emptyText}>Nessun brand trovato</div>
+          <button className="tb-btn primary" onClick={onNew}>+ Crea il primo brand</button>
+        </div>
+      ) : (
+        <table style={r.table}>
+          <thead>
+            <tr>
+              {["Brand","Tier","Status","Owner","Progress","Creato il",""].map(h=>(
+                <th key={h} style={r.th}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(brand=>{
+              const tier   = TIERS[brand.tier];
+              const status = STATUSES[brand.status];
+              const pct    = calcProgress(brand.checklist);
+              return (
+                <tr key={brand.id} className="tr-row" onClick={()=>onOpen(brand.id)}>
+                  <td style={r.td}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:brand.note?3:0}}>
+                      <div style={r.bName}>{brand.name}</div>
+                      {pct<100 && (
+                        <span style={{fontSize:11,fontWeight:700,color:"#fb923c",background:"rgba(251,146,60,0.12)",
+                          border:"1px solid rgba(251,146,60,0.3)",padding:"2px 8px",borderRadius:20,whiteSpace:"nowrap"}}>
+                          ⚠ Incompleto
+                        </span>
+                      )}
+                    </div>
+                    {brand.note && <div style={r.bNote}>{brand.note}</div>}
+                  </td>
+                  <td style={r.td}>
+                    <Pill color={tier.color} bg={tier.bg}>{tier.emoji} {tier.label}</Pill>
+                  </td>
+                  <td style={r.td}>
+                    <Pill color={status.color} bg={status.bg}>{status.label}</Pill>
+                  </td>
+                  <td style={r.td}><span style={r.owner}>{brand.owner||"—"}</span></td>
+                  <td style={r.td}>
+                    <div style={r.pctCell}>
+                      <div style={r.miniTrack}>
+                        <div style={{...r.miniFill,width:`${pct}%`,
+                          background:pct===100?"#34d399":`linear-gradient(90deg,${tier.color},${tier.color}88)`}}/>
+                      </div>
+                      <span style={{...r.pctNum,color:pct===100?"#34d399":"#94a3b8"}}>{pct}%</span>
+                    </div>
+                  </td>
+                  <td style={r.td}><span style={r.date}>{brand.createdAt}</span></td>
+                  <td style={{...r.td,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
+                    <button className="tb-btn danger-sm" onClick={()=>onDelete(brand.id)}>✕</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+// ─── SECTION ─────────────────────────────────────────────────────────────────
+
+function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio }) {
+  const items      = section.items;
+  const rgroups    = section.radioGroups || [];
+  const radiosDone = rgroups.filter(rg => cl.radios?.[rg.id]).length;
+  const secDone    = section.isTier
+    ? (cl.tier?1:0) + radiosDone
+    : items.filter(i=>cl.checked[i.id]).length + radiosDone;
+  const secTotal   = section.isTier
+    ? 1 + rgroups.length
+    : items.length + rgroups.length;
+  const secOk      = secDone===secTotal;
+
+  return (
+    <div className="sec-card" style={{...c.card, borderColor:secOk?"rgba(52,211,153,0.3)":"rgba(255,255,255,0.06)"}}>
+      {/* Section header */}
+      <div style={c.head}>
+        <div style={c.headLeft}>
+          <span style={c.num}>{section.number}</span>
+          <span style={c.title}>{section.title}</span>
+          <span style={{...c.badge,
+            background:secOk?"rgba(52,211,153,0.12)":"rgba(255,255,255,0.05)",
+            color:secOk?"#34d399":"#475569"}}>
+            {secDone}/{secTotal}
+          </span>
+        </div>
+        {!section.isTier && (
+          <button className="sec-btn" onClick={()=>onToggleSec(section)}>
+            {items.every(i=>cl.checked[i.id]) && rgroups.every(rg=>cl.radios?.[rg.id])
+              ? "Deseleziona tutto" : "Seleziona sezione"}
+          </button>
+        )}
+      </div>
+
+      {/* Tier radio */}
+      {section.isTier && (
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+          {[
+            {id:"gold",   desc:"Personalizzazione completa — tutti i token, dark mode, full-custom"},
+            {id:"silver", desc:"Personalizzazione media — colori, tipografia e icone"},
+            {id:"bronze", desc:"Personalizzazione base — solo colori primari e logo"},
+          ].map(t=>{
+            const td=TIERS[t.id];
+            const sel=cl.tier===t.id;
+            return (
+              <button key={t.id} className="tier-row"
+                style={{borderColor:sel?td.color:"rgba(255,255,255,0.07)",
+                  background:sel?td.dim:"rgba(255,255,255,0.02)"}}
+                onClick={()=>onSetTier(t.id)}>
+                <div style={c.radioWrap}>
+                  <div style={{...c.radio, borderColor:sel?td.color:"rgba(255,255,255,0.2)"}}>
+                    {sel && <div style={{...c.radioDot,background:td.color}}/>}
+                  </div>
+                  <span style={{fontSize:16}}>{td.emoji}</span>
+                  <span style={{fontSize:13,fontWeight:700,letterSpacing:"0.07em",
+                    textTransform:"uppercase",color:sel?td.color:"#64748b"}}>{td.label}</span>
+                </div>
+                <span style={c.tierDesc}>{t.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Radio groups */}
+      {rgroups.map(rg => {
+        const selected = cl.radios?.[rg.id] || null;
+        const isDone   = !!selected;
+        // Card style: used inside isTier sections (same look as tier rows)
+        if (section.isTier) {
+          return (
+            <div key={rg.id} style={{marginBottom:6}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,marginTop:4}}>
+                <div style={{flex:1,height:1,background:"rgba(255,255,255,0.07)"}}/>
+                <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#64748b",whiteSpace:"nowrap"}}>
+                  {rg.label}
+                </span>
+                <div style={{flex:1,height:1,background:"rgba(255,255,255,0.07)"}}/>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {rg.options.map(opt => {
+                  const sel = selected===opt.id;
+                  return (
+                    <button key={opt.id} className="tier-row"
+                      style={{borderColor:sel?"#34d399":"rgba(255,255,255,0.07)",
+                        background:sel?"rgba(52,211,153,0.08)":"rgba(255,255,255,0.02)"}}
+                      onClick={()=>onSetRadio(rg.id, opt.id)}>
+                      <div style={c.radioWrap}>
+                        <div style={{...c.radio, borderColor:sel?"#34d399":"rgba(255,255,255,0.2)"}}>
+                          {sel && <div style={{...c.radioDot,background:"#34d399"}}/>}
+                        </div>
+                        <span style={{fontSize:14,fontWeight:700,
+                          color:sel?"#34d399":"#94a3b8"}}>{opt.label}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+        // Inline pill style: used in other sections
+        return (
+          <div key={rg.id} style={{marginBottom:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#64748b"}}>
+                {rg.label}
+              </span>
+              {isDone && (
+                <span style={{fontSize:11,color:"#34d399",background:"rgba(52,211,153,0.1)",
+                  border:"1px solid rgba(52,211,153,0.25)",padding:"1px 8px",borderRadius:20}}>✓</span>
+              )}
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {rg.options.map(opt => {
+                const sel = selected===opt.id;
+                return (
+                  <button key={opt.id} className="radio-opt"
+                    style={{borderColor:sel?"#a78bfa":"rgba(255,255,255,0.12)",
+                      background:sel?"rgba(167,139,250,0.12)":"rgba(255,255,255,0.03)",
+                      color:sel?"#c4b5fd":"#94a3b8"}}
+                    onClick={()=>onSetRadio(rg.id, opt.id)}>
+                    <div style={{...c.radio, width:13, height:13,
+                      borderColor:sel?"#a78bfa":"rgba(255,255,255,0.25)",flexShrink:0}}>
+                      {sel && <div style={{...c.radioDot,width:5,height:5,background:"#a78bfa"}}/>}
+                    </div>
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Checkbox items */}
+      <ul style={c.list}>
+        {items.map(item=>{
+          const chk = !!cl.checked[item.id];
+          return (
+            <li key={item.id} className="check-item" style={c.item} onClick={()=>onToggleItem(item.id)}>
+              <div style={{...c.cb, borderColor:chk?"#34d399":"rgba(255,255,255,0.15)",
+                background:chk?"rgba(52,211,153,0.12)":"transparent"}}>
+                {chk && <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>}
+              </div>
+              <span style={{...c.itemLabel,
+                color:chk?"#64748b":"#e2e8f0",
+                textDecoration:chk?"line-through":"none"}}>
+                {item.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+// ─── SMALL SHARED ─────────────────────────────────────────────────────────────
+
+function CompleteBanner({ name, onAction, actionLabel, disabled }) {
+  return (
+    <div style={c.completeBanner}>
+      <div style={c.completeIcon}>✦</div>
+      <div>
+        <div style={c.completeTitle}>{name||"Brand"} è pronto</div>
+        <div style={c.completeSub}>Tutti i 10 punti completati.</div>
+      </div>
+      <button className="tb-btn primary" style={{marginLeft:"auto",...(disabled?{opacity:.35,pointerEvents:"none"}:{})}}
+        onClick={onAction}>{actionLabel}</button>
+    </div>
+  );
+}
+
+function Pill({ color, bg, children }) {
+  return (
+    <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:700,
+      letterSpacing:"0.06em",textTransform:"uppercase",padding:"4px 11px",borderRadius:20,
+      color,background:bg,border:`1px solid ${color}33`,whiteSpace:"nowrap"}}>
+      {children}
+    </span>
+  );
+}
+
+function SideItem({ icon, label, active, onClick, badge, badgeColor }) {
+  return (
+    <button className={`side-item ${active?"active":""}`} onClick={onClick}>
+      <span style={{fontSize:15}}>{icon}</span>
+      <span style={{flex:1,textAlign:"left",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{label}</span>
+      {badge!==undefined && (
+        <span style={{fontSize:12,fontWeight:700,color:badgeColor||"#475569",
+          background:"rgba(255,255,255,0.06)",padding:"2px 8px",borderRadius:20}}>{badge}</span>
+      )}
+    </button>
+  );
+}
+
+function Overlay({ children, onClose }) {
+  return (
+    <div style={o.overlay} onClick={onClose}>
+      <div style={o.box} onClick={e=>e.stopPropagation()}>{children}</div>
+    </div>
+  );
+}
+
+// ─── STYLES ───────────────────────────────────────────────────────────────────
+
+const s = {
+  shell:{ display:"flex", minHeight:"100vh", background:"#080a0f", color:"#e2e8f0",
+    fontFamily:"'DM Mono','Fira Code',monospace", fontSize:16 },
+  sidebar:{ width:240, flexShrink:0, display:"flex", flexDirection:"column", borderRight:"1px solid rgba(255,255,255,0.1)",
+    background:"#0d0f14", position:"sticky", top:0, height:"100vh", overflowY:"auto" },
+  sideTop:{ padding:"22px 18px 14px", borderBottom:"1px solid rgba(255,255,255,0.08)" },
+  brand:{ display:"flex", alignItems:"center", gap:10 },
+  brandIcon:{ fontSize:24, color:"#a78bfa", flexShrink:0 },
+  brandName:{ fontSize:15, fontWeight:700, color:"#f8fafc", letterSpacing:"0.02em" },
+  brandSub:{ fontSize:12, color:"#94a3b8", letterSpacing:"0.05em" },
+  nav:{ flex:1, overflowY:"auto", padding:"10px 8px" },
+  navSection:{ fontSize:11, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase",
+    color:"#64748b", padding:"10px 8px 5px" },
+  statRow:{ display:"flex", alignItems:"center", gap:6, padding:"5px 12px", fontSize:13, color:"#94a3b8" },
+  statBadge:{ marginLeft:"auto", fontSize:12, color:"#64748b" },
+  sideBottom:{ padding:"14px 18px", borderTop:"1px solid rgba(255,255,255,0.08)",
+    display:"flex", alignItems:"center", gap:6 },
+  syncDot:{ width:7, height:7, borderRadius:"50%", background:"#a78bfa", flexShrink:0 },
+  syncLabel:{ fontSize:12, color:"#64748b" },
+  main:{ flex:1, display:"flex", flexDirection:"column", minWidth:0 },
+  topbar:{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0 26px",
+    height:56, borderBottom:"1px solid rgba(255,255,255,0.08)", background:"rgba(13,15,20,0.97)",
+    flexShrink:0, gap:12, position:"sticky", top:0, zIndex:10 },
+  topbarLeft:{ display:"flex", alignItems:"center", gap:12, minWidth:0 },
+  topbarTitle:{ fontSize:17, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em", whiteSpace:"nowrap" },
+  topbarRight:{ display:"flex", alignItems:"center", gap:8, flexShrink:0 },
+  syncStatus:{ display:"flex", alignItems:"center", gap:6, fontSize:13, color:"#94a3b8", padding:"6px 14px",
+    background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6 },
+  content:{ flex:1 },
+  modalTitle:{ fontSize:18, fontWeight:700, color:"#f8fafc", margin:"0 0 6px" },
+  modalSub:{ fontSize:14, color:"#94a3b8", margin:"0 0 24px" },
+  modalFoot:{ display:"flex", justifyContent:"flex-end", gap:8 },
+};
+
+const p = {
+  wrap:{ maxWidth:780, margin:"0 auto", padding:"26px 26px 60px" },
+  metaCard:{ background:"#0d0f14", border:"1px solid rgba(255,255,255,0.1)", borderRadius:10,
+    padding:"22px", marginBottom:16 },
+  metaGrid:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:18 },
+  metaField:{ display:"flex", flexDirection:"column", gap:7 },
+  fieldLabel:{ fontSize:12, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"#94a3b8" },
+  input:{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:6,
+    padding:"10px 14px", color:"#f8fafc", fontSize:15, fontFamily:"inherit", outline:"none" },
+  progressRow:{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" },
+  progressTrack:{ flex:1, minWidth:80, height:3, background:"rgba(255,255,255,0.12)", borderRadius:2, overflow:"hidden" },
+  progressFill:{ height:"100%", borderRadius:2, transition:"width .4s ease" },
+  pctLabel:{ fontSize:14, color:"#94a3b8", minWidth:84 },
+  sections:{ display:"flex", flexDirection:"column", gap:10 },
+};
+
+const c = {
+  card:{ background:"#0d0f14", border:"1px solid", borderRadius:10, padding:"18px 20px", transition:"border-color .2s" },
+  head:{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 },
+  headLeft:{ display:"flex", alignItems:"center", gap:10 },
+  num:{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"#c4b5fd" },
+  title:{ fontSize:16, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em" },
+  badge:{ fontSize:12, padding:"3px 9px", borderRadius:20 },
+  list:{ listStyle:"none", margin:0, padding:0, display:"flex", flexDirection:"column", gap:3 },
+  item:{ display:"flex", alignItems:"center", gap:12, padding:"9px 11px", borderRadius:6, cursor:"pointer", transition:"background .1s" },
+  cb:{ width:20, height:20, borderRadius:4, border:"1.5px solid", display:"flex", alignItems:"center",
+    justifyContent:"center", flexShrink:0, transition:"all .15s" },
+  itemLabel:{ fontSize:15, lineHeight:1.5, transition:"all .15s" },
+  radioWrap:{ display:"flex", alignItems:"center", gap:8, marginBottom:5 },
+  radio:{ width:16, height:16, borderRadius:"50%", border:"1.5px solid", display:"flex",
+    alignItems:"center", justifyContent:"center", flexShrink:0 },
+  radioDot:{ width:7, height:7, borderRadius:"50%" },
+  tierDesc:{ fontSize:13, color:"#94a3b8", lineHeight:1.5, paddingLeft:24, display:"block" },
+  completeBanner:{ display:"flex", alignItems:"center", gap:18, background:"rgba(52,211,153,0.07)",
+    border:"1px solid rgba(52,211,153,0.25)", borderRadius:10, padding:"18px 22px", flexWrap:"wrap" },
+  completeIcon:{ fontSize:28, color:"#34d399" },
+  completeTitle:{ fontSize:16, fontWeight:700, color:"#34d399", margin:"0 0 4px" },
+  completeSub:{ fontSize:14, color:"#94a3b8" },
+};
+
+const r = {
+  wrap:{ padding:"0 26px 60px" },
+  statGrid:{ display:"grid", gridTemplateColumns:"repeat(8,1fr)", gap:1,
+    borderBottom:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.03)" },
+  statCard:{ padding:"22px 0", display:"flex", flexDirection:"column", alignItems:"center",
+    background:"#080a0f", gap:5 },
+  statVal:{ fontSize:30, fontWeight:700, lineHeight:1 },
+  statLabel:{ fontSize:11, color:"#94a3b8", letterSpacing:"0.08em", textTransform:"uppercase" },
+  toolbar:{ display:"flex", alignItems:"center", gap:10, padding:"14px 0", borderBottom:"1px solid rgba(255,255,255,0.08)", flexWrap:"wrap" },
+  search:{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:6,
+    padding:"8px 16px", color:"#f8fafc", fontSize:14, fontFamily:"inherit", outline:"none", width:220 },
+  filterGroup:{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" },
+  filterCap:{ fontSize:11, color:"#64748b", letterSpacing:"0.1em", textTransform:"uppercase", marginRight:2 },
+  table:{ width:"100%", borderCollapse:"collapse", marginTop:4 },
+  th:{ fontSize:11, letterSpacing:"0.1em", textTransform:"uppercase", color:"#64748b",
+    textAlign:"left", padding:"11px 14px", borderBottom:"1px solid rgba(255,255,255,0.1)", fontWeight:700 },
+  td:{ padding:"14px 14px", borderBottom:"1px solid rgba(255,255,255,0.07)", verticalAlign:"middle" },
+  bName:{ fontSize:15, fontWeight:600, color:"#f8fafc", marginBottom:3 },
+  bNote:{ fontSize:13, color:"#94a3b8", maxWidth:240, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" },
+  owner:{ fontSize:14, color:"#94a3b8" },
+  pctCell:{ display:"flex", alignItems:"center", gap:8 },
+  miniTrack:{ width:64, height:3, background:"rgba(255,255,255,0.12)", borderRadius:2, overflow:"hidden" },
+  miniFill:{ height:"100%", borderRadius:2, transition:"width .4s" },
+  pctNum:{ fontSize:13 },
+  date:{ fontSize:13, color:"#94a3b8" },
+  empty:{ textAlign:"center", padding:"80px 0" },
+  emptyIcon:{ fontSize:42, color:"rgba(255,255,255,0.08)", marginBottom:14 },
+  emptyText:{ fontSize:15, color:"#64748b", marginBottom:20 },
+};
+
+const o = {
+  overlay:{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", backdropFilter:"blur(8px)",
+    display:"flex", alignItems:"center", justifyContent:"center", zIndex:200, padding:24 },
+  box:{ background:"#0d0f14", border:"1px solid rgba(255,255,255,0.1)", borderRadius:12, padding:28,
+    width:"100%", maxWidth:420, boxShadow:"0 40px 80px rgba(0,0,0,0.7)" },
+};
+
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Sidebar items */
+  .side-item {
+    display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px;
+    background: none; border: none; color: #94a3b8; font-family: 'DM Mono',monospace;
+    font-size: 14px; border-radius: 6px; cursor: pointer; transition: all .12s; text-align: left;
+  }
+  .side-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+  .side-item.active { background: rgba(167,139,250,0.12); color: #f8fafc; border: 1px solid rgba(167,139,250,0.25); }
+
+  /* Top bar buttons */
+  .tb-btn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    color: #cbd5e1; font-family: 'DM Mono',monospace; font-size: 14px; font-weight: 600;
+    padding: 7px 16px; border-radius: 6px; cursor: pointer; transition: all .12s; white-space: nowrap;
+  }
+  .tb-btn:hover { background: rgba(255,255,255,0.13); color: #f8fafc; }
+  .tb-btn.primary {
+    background: linear-gradient(135deg,#7c3aed,#a78bfa);
+    border-color: rgba(167,139,250,0.5); color: #fff;
+  }
+  .tb-btn.primary:hover { opacity: .9; transform: translateY(-1px); }
+  .tb-btn.danger { border-color: rgba(239,68,68,0.4); color: #fca5a5; background: rgba(239,68,68,0.12); }
+  .tb-btn.danger:hover { background: rgba(239,68,68,0.22); color: #fca5a5; }
+  .tb-btn.danger-sm { background: transparent; border: 1px solid rgba(255,255,255,0.12);
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 13px;
+    padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: all .12s; }
+  .tb-btn.danger-sm:hover { background: rgba(239,68,68,0.14); color: #fca5a5; border-color: rgba(239,68,68,0.35); }
+
+  /* Segmented status buttons */
+  .seg-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 6px; border-radius: 6px;
+    cursor: pointer; transition: all .12s; }
+  .seg-btn:hover { background: rgba(255,255,255,0.09); color: #e2e8f0; }
+  .seg-btn.active { font-weight: 700; }
+
+  /* Section card */
+  .sec-card:hover { background: rgba(255,255,255,0.02) !important; }
+  .check-item:hover { background: rgba(255,255,255,0.05); }
+
+  /* Radio option buttons */
+  .radio-opt {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: transparent; border: 1px solid; border-radius: 8px;
+    padding: 7px 14px; cursor: pointer; font-family: 'DM Mono',monospace;
+    font-size: 13px; font-weight: 600; transition: all .12s;
+  }
+  .radio-opt:hover { background: rgba(167,139,250,0.07) !important; color: #c4b5fd !important; border-color: rgba(167,139,250,0.3) !important; }
+
+  /* Tier rows */
+  .tier-row { background: transparent; border: 1px solid; border-radius: 8px;
+    padding: 12px 16px; cursor: pointer; text-align: left; width: 100%;
+    transition: all .15s; font-family: 'DM Mono',monospace; }
+  .tier-row:hover { background: rgba(255,255,255,0.05) !important; }
+
+  /* Section button */
+  .sec-btn { background: transparent; border: 1px solid rgba(255,255,255,0.14);
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.06em; padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all .12s; }
+  .sec-btn:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+
+  /* Filter buttons */
+  .filter-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all .12s; }
+  .filter-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+  .filter-btn.on { background: rgba(255,255,255,0.11); color: #f8fafc; border-color: rgba(255,255,255,0.25); }
+
+  /* Table rows */
+  .tr-row { cursor: pointer; transition: background .1s; }
+  .tr-row:hover td { background: rgba(255,255,255,0.025); }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  input::placeholder { color: #64748b; }
+  input:focus { border-color: rgba(167,139,250,0.5) !important; outline: none; }
+`;
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
