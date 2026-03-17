@@ -42,14 +42,21 @@ const SECTIONS = [
       ]},
     ]
   },
-  { id:"palette",    number:"02", title:"Palette Colori",          items:[
-    {id:"p1",label:"Colore primario (hex + token)"},
-    {id:"p2",label:"Colore secondario"},
-    {id:"p3",label:"Colore accent"},
-    {id:"p4",label:"Varianti dark/light per ciascun colore"},
-    {id:"p5",label:"Colori neutri (background, surface, border)"},
-    {id:"p6",label:"Necessita di un colore custom terziario?"},
-  ]},
+  { id:"palette",    number:"02", title:"Palette Colori",
+    items:[
+      {id:"p1",label:"Colore primario (hex + token)"},
+      {id:"p2",label:"Colore secondario"},
+      {id:"p3",label:"Colore accent"},
+      {id:"p5",label:"Colori neutri (background, surface, border)"},
+      {id:"p6",label:"Necessita di un colore custom terziario?"},
+    ],
+    radioGroups:[
+      { id:"rg_darkmode_palette", label:"Necessita di dark mode?", options:[
+        {id:"rg_darkmode_palette_si", label:"Sì"},
+        {id:"rg_darkmode_palette_no", label:"No"},
+      ]},
+    ]
+  },
   { id:"icons",      number:"03", title:"Iconografia",
     items:[
       {id:"i1",label:"Set di icone definito (outline / filled / duotone)"},
@@ -77,7 +84,7 @@ const SECTIONS = [
     {id:"ty2",label:"Font secondario (body/UI)"},
     {id:"ty3",label:"Fallback web-safe definito"},
     {id:"ty4",label:"Licenza d'uso verificata"},
-    {id:"ty5",label:"Scala tipografica concordata"},
+    {id:"ty5",label:"Scala tipografica concordata", hasNote:true},
   ]},
   { id:"voice",      number:"06", title:"Tono e Voce",
     items:[
@@ -116,26 +123,32 @@ const SECTIONS = [
     {id:"c2",label:"Card"},
     {id:"c3",label:"Navigation / Header"},
     {id:"c4",label:"Form elements"},
-    {id:"c5",label:"Altri componenti custom"},
+    {id:"c5",label:"Altri componenti custom", hasNote:true},
   ]},
-  { id:"darkmode",   number:"09", title:"Dark Mode",               items:[
-    {id:"d1",label:"Il brand supporta la dark mode?"},
-    {id:"d2",label:"Palette dark dedicata o generata automaticamente?"},
-    {id:"d3",label:"Contrasto WCAG verificato in entrambe le modalità?"},
-  ]},
-  { id:"deliverable",number:"10", title:"Deliverable e Owner",     items:[
-    {id:"o1",label:"Brand guideline PDF disponibile?"},
-    {id:"o2",label:"Figma file condiviso?"},
-    {id:"o3",label:"Chi approva gli asset definitivi?"},
-    {id:"o4",label:"Referente lato cliente identificato"},
-  ]},
+
+  { id:"deliverable",number:"09", title:"Deliverable e Owner",
+    items:[
+      {id:"o3",label:"Project Manager?", hasNote:true},
+      {id:"o4",label:"Referente cliente?", hasNote:true},
+    ],
+    radioGroups:[
+      { id:"rg_brandguide", label:"Brand guideline PDF disponibile?", options:[
+        {id:"rg_brandguide_si", label:"Sì"},
+        {id:"rg_brandguide_no", label:"No"},
+      ]},
+      { id:"rg_figma", label:"Figma file da condividere con il cliente?", options:[
+        {id:"rg_figma_si", label:"Sì"},
+        {id:"rg_figma_no", label:"No"},
+      ]},
+    ]
+  },
 ];
 
 const ALL_IDS = SECTIONS.flatMap(s => s.items.map(i => i.id));
 const ALL_RADIO_GROUPS = SECTIONS.flatMap(s => (s.radioGroups||[]).map(rg => rg.id));
 const TOTAL_ITEMS = ALL_IDS.length + ALL_RADIO_GROUPS.length + 1; // +1 for tier
 
-const emptyChecklist = () => ({ checked:{}, tier:null, radios:{} });
+const emptyChecklist = () => ({ checked:{}, tier:null, radios:{}, notes:{} });
 
 function calcProgress(cl) {
   if (!cl) return 0;
@@ -151,7 +164,8 @@ const DEMO = {
   checklist:{
     checked:Object.fromEntries(ALL_IDS.map(id=>[id,true])),
     tier:"gold",
-    radios:{ rg_assets_custom:"rg_assets_custom_no", rg_angoli:"rg_angoli_arrot", rg_densita:"rg_densita_default", rg_spacing_custom:"rg_spacing_custom_no", rg_concordato:"rg_concordato_si", rg_lingua:"rg_lingua_it", rg_icone_custom:"rg_icone_custom_no" },
+    notes:{ ty5:"Type scale: xs/sm/base/lg/xl/2xl/3xl", c5:"es. Modal, Toast, Badge", o3:"Mario Rossi", o4:"Giulia Bianchi" },
+    radios:{ rg_assets_custom:"rg_assets_custom_no", rg_darkmode_palette:"rg_darkmode_palette_si", rg_angoli:"rg_angoli_arrot", rg_densita:"rg_densita_default", rg_spacing_custom:"rg_spacing_custom_no", rg_concordato:"rg_concordato_si", rg_lingua:"rg_lingua_it", rg_icone_custom:"rg_icone_custom_no", rg_brandguide:"rg_brandguide_si", rg_figma:"rg_figma_si" },
   },
 };
 
@@ -334,7 +348,8 @@ function NewView({ onSave }) {
       return [id, rg?.options[0]?.id || null];
     })),
   });
-  const clearAll    = () => patch({ checked:{}, tier:null, radios:{} });
+  const clearAll    = () => patch({ checked:{}, tier:null, radios:{}, notes:{} });
+  const changeNote  = (id, val) => patch({ notes:{...(cl.notes||{}),[id]:val} });
   const toggleSec   = sec => {
     const ids  = sec.items.map(i=>i.id);
     const allOn= ids.every(id=>cl.checked[id]);
@@ -397,7 +412,7 @@ function NewView({ onSave }) {
 
       <div style={p.sections}>
         {SECTIONS.map(sec => <Section key={sec.id} section={sec} cl={cl}
-          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setChkTier} onSetRadio={setRadio} />)}
+          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setChkTier} onSetRadio={setRadio} onNoteChange={changeNote} />)}
         {isOk
           ? <CompleteBanner name={name} onAction={()=>onSave({name,tier,owner,note,status,checklist:cl})}
               actionLabel="Salva nel registro →" disabled={!name.trim()} />
@@ -456,7 +471,8 @@ function ChecklistView({ brand, onPatch, onPatchBrand, onGoRegistry }) {
       return [id, rg?.options[0]?.id || null];
     })),
   });
-  const clearAll   = () => patch({checked:{},tier:null,radios:{}});
+  const clearAll   = () => patch({checked:{},tier:null,radios:{},notes:{}});
+  const changeNote = (id, val) => patch({ notes:{...(cl.notes||{}),[id]:val} });
   const toggleSec  = sec => {
     const ids=sec.items.map(i=>i.id),allOn=ids.every(id=>cl.checked[id]),next={...cl.checked};
     ids.forEach(id=>next[id]=!allOn); patch({checked:next});
@@ -546,7 +562,7 @@ function ChecklistView({ brand, onPatch, onPatchBrand, onGoRegistry }) {
 
       <div style={p.sections}>
         {SECTIONS.map(sec => <Section key={sec.id} section={sec} cl={cl}
-          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setTier} onSetRadio={setRadio} />)}
+          onToggleItem={toggleItem} onToggleSec={toggleSec} onSetTier={setTier} onSetRadio={setRadio} onNoteChange={changeNote} />)}
         {isOk && <CompleteBanner name={brand.name} onAction={onGoRegistry} actionLabel="Vai al registro →" />}
       </div>
     </div>
@@ -696,7 +712,7 @@ function RegistryView({ brands, onOpen, onDelete, onNew }) {
 
 // ─── SECTION ─────────────────────────────────────────────────────────────────
 
-function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio }) {
+function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio, onNoteChange }) {
   const items      = section.items;
   const rgroups    = section.radioGroups || [];
   const radiosDone = rgroups.filter(rg => cl.radios?.[rg.id]).length;
@@ -835,18 +851,30 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
         {items.map(item=>{
           const chk = !!cl.checked[item.id];
           return (
-            <li key={item.id} className="check-item" style={c.item} onClick={()=>onToggleItem(item.id)}>
-              <div style={{...c.cb, borderColor:chk?"#34d399":"rgba(255,255,255,0.15)",
-                background:chk?"rgba(52,211,153,0.12)":"transparent"}}>
-                {chk && <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>}
+            <li key={item.id} style={{...c.item, flexDirection:"column", alignItems:"stretch", gap:0, padding:0}}>
+              <div className="check-item" style={{...c.item, cursor:"pointer"}} onClick={()=>onToggleItem(item.id)}>
+                <div style={{...c.cb, borderColor:chk?"#34d399":"rgba(255,255,255,0.15)",
+                  background:chk?"rgba(52,211,153,0.12)":"transparent"}}>
+                  {chk && <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4L3.5 6.5L9 1" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>}
+                </div>
+                <span style={{...c.itemLabel,
+                  color:chk?"#64748b":"#e2e8f0",
+                  textDecoration:chk?"line-through":"none"}}>
+                  {item.label}
+                </span>
               </div>
-              <span style={{...c.itemLabel,
-                color:chk?"#64748b":"#e2e8f0",
-                textDecoration:chk?"line-through":"none"}}>
-                {item.label}
-              </span>
+              {item.hasNote && (
+                <div style={{paddingLeft:44, paddingBottom:8}} onClick={e=>e.stopPropagation()}>
+                  <input
+                    className="note-field"
+                    placeholder="Aggiungi una nota..."
+                    value={cl.notes?.[item.id] || ""}
+                    onChange={e => onNoteChange && onNoteChange(item.id, e.target.value)}
+                  />
+                </div>
+              )}
             </li>
           );
         })}
@@ -1098,6 +1126,15 @@ const css = `
 
   input::placeholder { color: #64748b; }
   input:focus { border-color: rgba(167,139,250,0.5) !important; outline: none; }
+
+  /* Inline note field */
+  .note-field {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; padding: 7px 12px; color: #94a3b8; font-family: 'DM Mono',monospace;
+    font-size: 13px; outline: none; transition: border-color .15s; box-sizing: border-box;
+  }
+  .note-field:focus { border-color: rgba(167,139,250,0.4) !important; color: #e2e8f0; }
+  .note-field::placeholder { color: #475569; font-style: italic; }
 `;
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
