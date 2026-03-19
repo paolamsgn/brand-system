@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brand System — Design System Governance</title>
+  <title>Brand System</title>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>html, body, #root { margin: 0; padding: 0; min-height: 100vh; background: #080a0f; }</style>
+  <style>html,body,#root{margin:0;padding:0;min-height:100vh;background:#080a0f;}</style>
 </head>
 <body>
   <div id="root"></div>
@@ -17,12 +17,12 @@
 
 const TIERS = {
   gold:   { label:"Gold",   emoji:"🥇", color:"#C9A84C", bg:"rgba(201,168,76,0.1)",  dim:"rgba(201,168,76,0.06)" },
-  silver: { label:"Silver", emoji:"🥈", color:"#94a3b8", bg:"rgba(148,163,184,0.1)", dim:"rgba(148,163,184,0.06)" },
+  silver: { label:"Silver", emoji:"🥈", color:"#c0cad6", bg:"rgba(148,163,184,0.1)", dim:"rgba(148,163,184,0.06)" },
   bronze: { label:"Bronze", emoji:"🥉", color:"#cd7f5a", bg:"rgba(205,127,90,0.1)",  dim:"rgba(205,127,90,0.06)" },
 };
 
 const STATUSES = {
-  draft:    { label:"Draft",     color:"#64748b", bg:"rgba(100,116,139,0.15)" },
+  draft:    { label:"Draft",     color:"#8896a8", bg:"rgba(100,116,139,0.15)" },
   inreview: { label:"In Review", color:"#a78bfa", bg:"rgba(167,139,250,0.15)" },
   active:   { label:"Active",    color:"#34d399", bg:"rgba(52,211,153,0.15)"  },
 };
@@ -182,6 +182,7 @@ function App() {
   const openBrand  = id => { setActiveId(id); setView("checklist"); };
   const goNew      = () => { setActiveId(null); setView("new"); };
   const goRegistry = () => setView("registry");
+  const goWorkflow = () => setView("workflow");
 
   const saveNew = data => {
     const b = { id:Date.now(), ...data, createdAt:new Date().toISOString().slice(0,10) };
@@ -228,6 +229,7 @@ function App() {
           <SideItem icon="+" label="Nuovo brand"   active={view==="new"}      onClick={goNew} />
           <SideItem icon="≡" label="Registro brand" active={view==="registry"} onClick={goRegistry}
             badge={brands.length} />
+          <SideItem icon="◈" label="Workflow" active={view==="workflow"} onClick={goWorkflow} />
 
           {brands.length > 0 && (
             <>
@@ -246,7 +248,7 @@ function App() {
           <div style={{...s.navSection, marginTop:16}}>STATO</div>
           <div style={s.statRow}><span style={{color:"#34d399"}}>●</span> Active <span style={s.statBadge}>{activeCount}</span></div>
           <div style={s.statRow}><span style={{color:"#a78bfa"}}>●</span> In Review <span style={s.statBadge}>{reviewCount}</span></div>
-          <div style={s.statRow}><span style={{color:"#64748b"}}>●</span> Draft <span style={s.statBadge}>{draftCount}</span></div>
+          <div style={s.statRow}><span style={{color:"#8896a8"}}>●</span> Draft <span style={s.statBadge}>{draftCount}</span></div>
         </nav>
 
         <div style={s.sideBottom}>
@@ -263,6 +265,7 @@ function App() {
             <span style={s.topbarTitle}>
               {view==="new"       && "Nuovo brand"}
               {view==="registry"  && "Registro brand"}
+              {view==="workflow"   && "Workflow — Covenant Push"}
               {view==="checklist" && active?.name}
             </span>
             {view==="checklist" && active && (
@@ -303,6 +306,7 @@ function App() {
           {view==="new"       && <NewView onSave={saveNew} />}
           {view==="checklist" && active && <ChecklistView brand={active} onPatch={patchCL} onPatchBrand={patchBrand} onGoRegistry={goRegistry} />}
           {view==="registry"  && <RegistryView brands={brands} onOpen={openBrand} onDelete={id=>setConfirmDel(id)} onNew={goNew} />}
+          {view==="workflow"   && <WorkflowView />}
         </div>
       </div>
 
@@ -422,7 +426,7 @@ function NewView({ onSave }) {
               <span style={{fontSize:22,color:"#fb923c"}}>⚠</span>
               <div>
                 <div style={{fontSize:15,fontWeight:700,color:"#fb923c",marginBottom:3}}>Checklist incompleta</div>
-                <div style={{fontSize:13,color:"#94a3b8"}}>Puoi comunque salvare il brand — verrà marcato come incompleto nel registro.</div>
+                <div style={{fontSize:13,color:"#c0cad6"}}>Puoi comunque salvare il brand — verrà marcato come incompleto nel registro.</div>
               </div>
               <button className="tb-btn" style={{marginLeft:"auto",borderColor:"rgba(251,146,60,0.4)",color:"#fb923c"}}
                 onClick={()=>onSave({name,tier,owner,note,status,checklist:cl})} disabled={!name.trim()}>
@@ -497,7 +501,7 @@ function ChecklistView({ brand, onPatch, onPatchBrand, onGoRegistry }) {
               </Pill>
             </div>
             {(brand.owner||brand.note) && (
-              <div style={{display:"flex",gap:16,fontSize:13,color:"#94a3b8"}}>
+              <div style={{display:"flex",gap:16,fontSize:13,color:"#c0cad6"}}>
                 {brand.owner && <span>👤 {brand.owner}</span>}
                 {brand.note  && <span style={{opacity:.8}}>— {brand.note}</span>}
               </div>
@@ -569,6 +573,221 @@ function ChecklistView({ brand, onPatch, onPatchBrand, onGoRegistry }) {
   );
 }
 
+
+// ─── WORKFLOW VIEW ────────────────────────────────────────────────────────────
+
+// ─── WORKFLOW DATA ───────────────────────────────────────────────────────────
+
+const COMMIT_TYPES = [
+  { type:"add",      color:"#34d399", desc:"Nuovi token",                       when:"Aggiungi colori, spacing, nuovi componenti, nuovo brand" },
+  { type:"update",   color:"#a78bfa", desc:"Modifica token esistenti",           when:"Cambio valore, rinomina, aggiornamento alias" },
+  { type:"remove",   color:"#f87171", desc:"Rimozione token",                   when:"Deprecazione, pulizia token inutilizzati" },
+  { type:"fix",      color:"#fb923c", desc:"Correzione errore",                 when:"Alias rotto, valore hex sbagliato, tipo errato" },
+  { type:"refactor", color:"#60a5fa", desc:"Ristrutturazione",                  when:"Riorganizzazione path, migrazione scala centesimale" },
+  { type:"sync",     color:"#fbbf24", desc:"Sincronizzazione Figma → JSON", when:"Allineamento variabili Figma al JSON" },
+];
+
+const STEPS = [
+  { n:"01", title:"Apri Covenant in Figma", body:"Dal pannello plugin in Figma apri Covenant. Verifica che la GitHub Integration sia configurata - la prima volta appare Not configured: clicca la freccia per autenticarti." },
+  { n:"02", title:"Scegli l'Export Source", body:"Dal dropdown Export Source seleziona il file JSON da esportare (es. orbittokens.json). Il pannello Preview mostra l'anteprima del JSON in formato W3C Design Tokens." },
+  { n:"03", title:"Compila il Commit Message", body:"Scegli il tipo (add / update / remove / fix / refactor / sync), inserisci lo scope (brand o area token), scrivi una short description. Usa (!) per breaking change." },
+  { n:"04", title:"Controlla l'Activity Timeline", body:"Prima del push verifica che non ci siano operazioni in corso. Se riporta Waiting for activity sei libero di procedere." },
+  { n:"05", title:"Pull Request o Download JSON", body:"Clicca Pull Request per aprire una PR su GitHub (opzione raccomandata). Usa Download JSON solo per testing locale senza toccare il repo remoto." },
+];
+
+
+// ─── WORKFLOW VIEW ────────────────────────────────────────────────────────────
+
+function WorkflowView() {
+  return (
+    <div style={wf.wrap}>
+
+      {/* Intro */}
+      <div style={wf.intro}>
+        <div style={wf.introIcon}>◈</div>
+        <div>
+          <div style={wf.introTitle}>Covenant - Push Guidelines</div>
+          <div style={wf.introSub}>Linee guida per il push dei token dal plugin Covenant verso il repository GitHub del Design System.</div>
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>PROCEDURA</div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {STEPS.map(step => (
+            <div key={step.n} style={wf.stepCard}>
+              <div style={wf.stepNum}>{step.n}</div>
+              <div>
+                <div style={wf.stepTitle}>{step.title}</div>
+                <div style={wf.stepBody}>{step.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Commit anatomy */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>ANATOMIA DEL COMMIT</div>
+        <div style={wf.commitCard}>
+          <div style={wf.commitLine}>
+            <span style={{color:"#a78bfa",fontWeight:700}}>type</span>
+            <span style={wf.commitSep}>(</span>
+            <span style={{color:"#34d399",fontWeight:700}}>scope</span>
+            <span style={wf.commitSep}>)</span>
+            <span style={{color:"#fb923c",fontWeight:700}}>!</span>
+            <span style={wf.commitSep}>:</span>
+            <span style={{color:"#f1f5f9",fontWeight:500}}>{" short description"}</span>
+          </div>
+          <div style={wf.commitMeta}>
+            <span style={{color:"#a78bfa"}}>type</span>{" = categoria  "}
+            <span style={{color:"#34d399"}}>scope</span>{" = brand o area token  "}
+            <span style={{color:"#fb923c"}}>!</span>{" = breaking change  "}
+            <span style={{color:"#f1f5f9"}}>description</span>{" = max 72 caratteri"}
+          </div>
+          <div style={wf.commitExamples}>
+            {[
+              "add(lumina): primary and secondary color tokens",
+              "update(orbit): border-radius scale from 4 to 6px",
+              "remove(typography): deprecated heading-xl-legacy token",
+              "fix(lumina): correct primary hex value",
+              "sync(orbit): align spacing variables from Figma to JSON",
+              "refactor(orbit)!: rename spacing scale - breaking change",
+            ].map(ex => (
+              <div key={ex} style={wf.commitEx}>
+                <span style={{color:"#8896a8",userSelect:"none",marginRight:8}}>$</span>
+                <code style={{color:"#c4b5fd",fontSize:13}}>{ex}</code>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Commit types */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>TIPI DI COMMIT</div>
+        <div style={wf.typesGrid}>
+          {COMMIT_TYPES.map(t => (
+            <div key={t.type} style={{...wf.typeCard, borderColor:"rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.02)"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                <code style={{...wf.typeLabel, color:t.color}}>{t.type}</code>
+                <div style={{flex:1,height:1,background:"rgba(255,255,255,0.06)"}}/>
+              </div>
+              <div style={{fontSize:14,color:"#e8edf2",lineHeight:1.5,marginBottom:6}}>{t.desc}</div>
+              <div style={{fontSize:13,color:"#8896a8",lineHeight:1.5,borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:8}}>
+                <span style={{color:"#7a8899",marginRight:4}}>quando:</span>{t.when}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Breaking change */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>BREAKING CHANGE (!)</div>
+        <div style={wf.breakCard}>
+          <div style={{fontSize:22,color:"#fb923c",flexShrink:0}}>!</div>
+          <div>
+            <div style={{fontSize:14,fontWeight:700,color:"#fb923c",marginBottom:8}}>
+              Attenzione: intervento drastico, solo in casi estremi
+            </div>
+            <div style={{fontSize:13,color:"#c0cad6",lineHeight:1.7,marginBottom:10}}>
+              Il flag <strong style={{color:"#fb923c"}}>(!) Breaking Change</strong> va usato
+              {" ESCLUSIVAMENTE "} quando il commit che stai per lanciare{" "}
+              <strong style={{color:"#f8fafc"}}>rompe quanto sviluppato fino ad ora</strong>:
+              componenti, alias o token esistenti che smettono di funzionare correttamente.
+              Non usarlo per modifiche ordinarie, anche se significative.
+            </div>
+            <ul style={{margin:"0 0 10px 0",padding:"0 0 0 18px",display:"flex",flexDirection:"column",gap:6}}>
+              {[
+                "Rinomina di un token gia in uso in produzione (rompe i riferimenti esistenti)",
+                "Rimozione di un token esistente (rompe i componenti che lo usano)",
+                "Cambio di valore che altera visivamente componenti gia rilasciati",
+                "Ristrutturazione dello schema che invalida alias o path esistenti",
+              ].map(item => (
+                <li key={item} style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{item}</li>
+              ))}
+            </ul>
+            <div style={{padding:"10px 14px",background:"rgba(251,146,60,0.08)",
+              border:"1px solid rgba(251,146,60,0.3)",borderRadius:8,
+              fontSize:12,color:"#fb923c",lineHeight:1.6,fontWeight:600}}>
+              Se hai dubbi, non usarlo. Preferisci un commit ordinario e apri una PR per revisione.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scope guide */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>CONVENZIONI SCOPE</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          {[
+            { scope:"orbit",       use:"Modifiche al core del Design System (token globali)" },
+            { scope:"[brand-name]",use:"Token specifici di un brand (es. lumina, mooney)" },
+            { scope:"color",       use:"Modifiche alla palette o ai token colore" },
+            { scope:"typography",  use:"Token tipografici (font, scale, weight)" },
+            { scope:"spacing",     use:"Token di spacing, radius, density" },
+            { scope:"components",  use:"Token a livello di componente" },
+          ].map(s => (
+            <div key={s.scope} style={wf.scopeCard}>
+              <code style={{fontSize:13,color:"#a78bfa",fontWeight:700}}>{s.scope}</code>
+              <div style={{fontSize:13,color:"#8896a8",marginTop:4,lineHeight:1.5}}>{s.use}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+const wf = {
+  wrap:{ maxWidth:780, margin:"0 auto", padding:"26px 26px 80px", display:"flex", flexDirection:"column", gap:28 },
+  intro:{ display:"flex", alignItems:"flex-start", gap:16, background:"rgba(167,139,250,0.06)",
+    border:"1px solid rgba(167,139,250,0.2)", borderRadius:10, padding:"20px 22px" },
+  introIcon:{ fontSize:28, color:"#a78bfa", flexShrink:0 },
+  introTitle:{ fontSize:17, fontWeight:700, color:"#f8fafc", marginBottom:6 },
+  introSub:{ fontSize:14, color:"#c0cad6", lineHeight:1.6 },
+  section:{ display:"flex", flexDirection:"column", gap:12 },
+  sectionLabel:{ fontSize:11, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase", color:"#7a8899" },
+  stepCard:{ display:"flex", gap:16, background:"#0d0f14", border:"1px solid rgba(255,255,255,0.07)",
+    borderRadius:10, padding:"16px 20px", alignItems:"flex-start" },
+  stepNum:{ fontSize:12, fontWeight:700, color:"#a78bfa", background:"rgba(167,139,250,0.1)",
+    border:"1px solid rgba(167,139,250,0.2)", borderRadius:6, padding:"3px 9px", flexShrink:0, letterSpacing:"0.1em" },
+  stepTitle:{ fontSize:14, fontWeight:700, color:"#f8fafc", marginBottom:5 },
+  stepBody:{ fontSize:14, color:"#c0cad6", lineHeight:1.65 },
+  commitCard:{ background:"#0d0f14", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:"20px 22px",
+    display:"flex", flexDirection:"column", gap:14 },
+  commitLine:{ display:"flex", alignItems:"center", flexWrap:"wrap", gap:2, fontSize:17, fontFamily:"'DM Mono',monospace" },
+  commitSep:{ color:"#7a8899" },
+  commitMeta:{ fontSize:12, color:"#8896a8", lineHeight:1.7 },
+  commitExamples:{ display:"flex", flexDirection:"column", gap:6, background:"rgba(0,0,0,0.3)",
+    borderRadius:8, padding:"14px 16px", borderLeft:"3px solid rgba(167,139,250,0.3)" },
+  commitEx:{ display:"flex", alignItems:"center", gap:0 },
+  typesGrid:{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 },
+  typeCard:{ border:"1px solid", borderRadius:8, padding:"12px 14px", cursor:"pointer", transition:"all .15s" },
+  typeLabel:{ fontSize:13, fontWeight:700, letterSpacing:"0.07em", transition:"color .15s" },
+  typeDesc:{ fontSize:12, color:"#c0cad6", marginTop:6, lineHeight:1.5 },
+  typeHint:{ fontSize:12, color:"#7a8899", textAlign:"center", marginTop:4 },
+  breakCard:{ display:"flex", gap:16, alignItems:"flex-start", background:"rgba(251,146,60,0.05)",
+    border:"1px solid rgba(251,146,60,0.2)", borderRadius:10, padding:"18px 20px" },
+  scopeCard:{ background:"#0d0f14", border:"1px solid rgba(255,255,255,0.07)", borderRadius:8, padding:"14px 16px" },
+};
+
+function commitPart(part) {
+  const colors = { type:"#a78bfa", scope:"#34d399", bang:"#fb923c", desc:"#f1f5f9" };
+  return { color: colors[part]||"#f1f5f9", fontWeight:700 };
+}
+
+
 // ─── REGISTRY VIEW ────────────────────────────────────────────────────────────
 
 function RegistryView({ brands, onOpen, onDelete, onNew }) {
@@ -601,13 +820,13 @@ function RegistryView({ brands, onOpen, onDelete, onNew }) {
       {/* Stat cards */}
       <div style={r.statGrid}>
         {[
-          {label:"Totale",      val:cnt.all,        color:"#e2e8f0"},
+          {label:"Totale",      val:cnt.all,        color:"#f1f5f9"},
           {label:"Active",      val:cnt.active,     color:"#34d399"},
           {label:"In Review",   val:cnt.inreview,   color:"#a78bfa"},
-          {label:"Draft",       val:cnt.draft,      color:"#64748b"},
+          {label:"Draft",       val:cnt.draft,      color:"#8896a8"},
           {label:"⚠ Incompleto",val:cnt.incomplete, color:"#fb923c"},
           {label:"🥇 Gold",     val:cnt.gold,       color:"#C9A84C"},
-          {label:"🥈 Silver",   val:cnt.silver,     color:"#94a3b8"},
+          {label:"🥈 Silver",   val:cnt.silver,     color:"#c0cad6"},
           {label:"🥉 Bronze",   val:cnt.bronze,     color:"#cd7f5a"},
         ].map(st=>(
           <div key={st.label} style={r.statCard}>
@@ -693,7 +912,7 @@ function RegistryView({ brands, onOpen, onDelete, onNew }) {
                         <div style={{...r.miniFill,width:`${pct}%`,
                           background:pct===100?"#34d399":`linear-gradient(90deg,${tier.color},${tier.color}88)`}}/>
                       </div>
-                      <span style={{...r.pctNum,color:pct===100?"#34d399":"#94a3b8"}}>{pct}%</span>
+                      <span style={{...r.pctNum,color:pct===100?"#34d399":"#c0cad6"}}>{pct}%</span>
                     </div>
                   </td>
                   <td style={r.td}><span style={r.date}>{brand.createdAt}</span></td>
@@ -733,7 +952,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
           <span style={c.title}>{section.title}</span>
           <span style={{...c.badge,
             background:secOk?"rgba(52,211,153,0.12)":"rgba(255,255,255,0.05)",
-            color:secOk?"#34d399":"#475569"}}>
+            color:secOk?"#34d399":"#7a8899"}}>
             {secDone}/{secTotal}
           </span>
         </div>
@@ -766,7 +985,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
                   </div>
                   <span style={{fontSize:16}}>{td.emoji}</span>
                   <span style={{fontSize:13,fontWeight:700,letterSpacing:"0.07em",
-                    textTransform:"uppercase",color:sel?td.color:"#64748b"}}>{td.label}</span>
+                    textTransform:"uppercase",color:sel?td.color:"#8896a8"}}>{td.label}</span>
                 </div>
                 <span style={c.tierDesc}>{t.desc}</span>
               </button>
@@ -785,7 +1004,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
             <div key={rg.id} style={{marginBottom:6}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,marginTop:4}}>
                 <div style={{flex:1,height:1,background:"rgba(255,255,255,0.07)"}}/>
-                <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#64748b",whiteSpace:"nowrap"}}>
+                <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#8896a8",whiteSpace:"nowrap"}}>
                   {rg.label}
                 </span>
                 <div style={{flex:1,height:1,background:"rgba(255,255,255,0.07)"}}/>
@@ -803,7 +1022,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
                           {sel && <div style={{...c.radioDot,background:"#34d399"}}/>}
                         </div>
                         <span style={{fontSize:14,fontWeight:700,
-                          color:sel?"#34d399":"#94a3b8"}}>{opt.label}</span>
+                          color:sel?"#34d399":"#c0cad6"}}>{opt.label}</span>
                       </div>
                     </button>
                   );
@@ -816,7 +1035,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
         return (
           <div key={rg.id} style={{marginBottom:14}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-              <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#64748b"}}>
+              <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#8896a8"}}>
                 {rg.label}
               </span>
               {isDone && (
@@ -831,7 +1050,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
                   <button key={opt.id} className="radio-opt"
                     style={{borderColor:sel?"#a78bfa":"rgba(255,255,255,0.12)",
                       background:sel?"rgba(167,139,250,0.12)":"rgba(255,255,255,0.03)",
-                      color:sel?"#c4b5fd":"#94a3b8"}}
+                      color:sel?"#c4b5fd":"#c0cad6"}}
                     onClick={()=>onSetRadio(rg.id, opt.id)}>
                     <div style={{...c.radio, width:13, height:13,
                       borderColor:sel?"#a78bfa":"rgba(255,255,255,0.25)",flexShrink:0}}>
@@ -860,7 +1079,7 @@ function Section({ section, cl, onToggleItem, onToggleSec, onSetTier, onSetRadio
                   </svg>}
                 </div>
                 <span style={{...c.itemLabel,
-                  color:chk?"#64748b":"#e2e8f0",
+                  color:chk?"#8896a8":"#f1f5f9",
                   textDecoration:chk?"line-through":"none"}}>
                   {item.label}
                 </span>
@@ -915,7 +1134,7 @@ function SideItem({ icon, label, active, onClick, badge, badgeColor }) {
       <span style={{fontSize:15}}>{icon}</span>
       <span style={{flex:1,textAlign:"left",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{label}</span>
       {badge!==undefined && (
-        <span style={{fontSize:12,fontWeight:700,color:badgeColor||"#475569",
+        <span style={{fontSize:12,fontWeight:700,color:badgeColor||"#7a8899",
           background:"rgba(255,255,255,0.06)",padding:"2px 8px",borderRadius:20}}>{badge}</span>
       )}
     </button>
@@ -933,36 +1152,36 @@ function Overlay({ children, onClose }) {
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 
 const s = {
-  shell:{ display:"flex", minHeight:"100vh", background:"#080a0f", color:"#e2e8f0",
-    fontFamily:"'DM Mono','Fira Code',monospace", fontSize:16 },
+  shell:{ display:"flex", minHeight:"100vh", background:"#080a0f", color:"#f1f5f9",
+    fontFamily:"'DM Mono','Fira Code',monospace", fontSize:17 },
   sidebar:{ width:240, flexShrink:0, display:"flex", flexDirection:"column", borderRight:"1px solid rgba(255,255,255,0.1)",
     background:"#0d0f14", position:"sticky", top:0, height:"100vh", overflowY:"auto" },
   sideTop:{ padding:"22px 18px 14px", borderBottom:"1px solid rgba(255,255,255,0.08)" },
   brand:{ display:"flex", alignItems:"center", gap:10 },
   brandIcon:{ fontSize:24, color:"#a78bfa", flexShrink:0 },
   brandName:{ fontSize:15, fontWeight:700, color:"#f8fafc", letterSpacing:"0.02em" },
-  brandSub:{ fontSize:12, color:"#94a3b8", letterSpacing:"0.05em" },
+  brandSub:{ fontSize:12, color:"#c0cad6", letterSpacing:"0.05em" },
   nav:{ flex:1, overflowY:"auto", padding:"10px 8px" },
-  navSection:{ fontSize:11, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase",
-    color:"#64748b", padding:"10px 8px 5px" },
-  statRow:{ display:"flex", alignItems:"center", gap:6, padding:"5px 12px", fontSize:13, color:"#94a3b8" },
-  statBadge:{ marginLeft:"auto", fontSize:12, color:"#64748b" },
+  navSection:{ fontSize:12, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase",
+    color:"#8896a8", padding:"10px 8px 5px" },
+  statRow:{ display:"flex", alignItems:"center", gap:6, padding:"5px 12px", fontSize:13, color:"#c0cad6" },
+  statBadge:{ marginLeft:"auto", fontSize:12, color:"#8896a8" },
   sideBottom:{ padding:"14px 18px", borderTop:"1px solid rgba(255,255,255,0.08)",
     display:"flex", alignItems:"center", gap:6 },
   syncDot:{ width:7, height:7, borderRadius:"50%", background:"#a78bfa", flexShrink:0 },
-  syncLabel:{ fontSize:12, color:"#64748b" },
+  syncLabel:{ fontSize:12, color:"#8896a8" },
   main:{ flex:1, display:"flex", flexDirection:"column", minWidth:0 },
   topbar:{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0 26px",
     height:56, borderBottom:"1px solid rgba(255,255,255,0.08)", background:"rgba(13,15,20,0.97)",
     flexShrink:0, gap:12, position:"sticky", top:0, zIndex:10 },
   topbarLeft:{ display:"flex", alignItems:"center", gap:12, minWidth:0 },
-  topbarTitle:{ fontSize:17, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em", whiteSpace:"nowrap" },
+  topbarTitle:{ fontSize:18, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em", whiteSpace:"nowrap" },
   topbarRight:{ display:"flex", alignItems:"center", gap:8, flexShrink:0 },
-  syncStatus:{ display:"flex", alignItems:"center", gap:6, fontSize:13, color:"#94a3b8", padding:"6px 14px",
+  syncStatus:{ display:"flex", alignItems:"center", gap:6, fontSize:13, color:"#c0cad6", padding:"6px 14px",
     background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6 },
   content:{ flex:1 },
   modalTitle:{ fontSize:18, fontWeight:700, color:"#f8fafc", margin:"0 0 6px" },
-  modalSub:{ fontSize:14, color:"#94a3b8", margin:"0 0 24px" },
+  modalSub:{ fontSize:14, color:"#c0cad6", margin:"0 0 24px" },
   modalFoot:{ display:"flex", justifyContent:"flex-end", gap:8 },
 };
 
@@ -972,13 +1191,13 @@ const p = {
     padding:"22px", marginBottom:16 },
   metaGrid:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:18 },
   metaField:{ display:"flex", flexDirection:"column", gap:7 },
-  fieldLabel:{ fontSize:12, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"#94a3b8" },
+  fieldLabel:{ fontSize:13, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"#c0cad6" },
   input:{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:6,
-    padding:"10px 14px", color:"#f8fafc", fontSize:15, fontFamily:"inherit", outline:"none" },
+    padding:"10px 14px", color:"#f8fafc", fontSize:16, fontFamily:"inherit", outline:"none" },
   progressRow:{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" },
   progressTrack:{ flex:1, minWidth:80, height:3, background:"rgba(255,255,255,0.12)", borderRadius:2, overflow:"hidden" },
   progressFill:{ height:"100%", borderRadius:2, transition:"width .4s ease" },
-  pctLabel:{ fontSize:14, color:"#94a3b8", minWidth:84 },
+  pctLabel:{ fontSize:15, color:"#c0cad6", minWidth:84 },
   sections:{ display:"flex", flexDirection:"column", gap:10 },
 };
 
@@ -987,23 +1206,23 @@ const c = {
   head:{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 },
   headLeft:{ display:"flex", alignItems:"center", gap:10 },
   num:{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"#c4b5fd" },
-  title:{ fontSize:16, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em" },
-  badge:{ fontSize:12, padding:"3px 9px", borderRadius:20 },
+  title:{ fontSize:17, fontWeight:700, color:"#f8fafc", letterSpacing:"0.01em" },
+  badge:{ fontSize:13, padding:"3px 9px", borderRadius:20 },
   list:{ listStyle:"none", margin:0, padding:0, display:"flex", flexDirection:"column", gap:3 },
   item:{ display:"flex", alignItems:"center", gap:12, padding:"9px 11px", borderRadius:6, cursor:"pointer", transition:"background .1s" },
   cb:{ width:20, height:20, borderRadius:4, border:"1.5px solid", display:"flex", alignItems:"center",
     justifyContent:"center", flexShrink:0, transition:"all .15s" },
-  itemLabel:{ fontSize:15, lineHeight:1.5, transition:"all .15s" },
+  itemLabel:{ fontSize:16, lineHeight:1.5, transition:"all .15s" },
   radioWrap:{ display:"flex", alignItems:"center", gap:8, marginBottom:5 },
   radio:{ width:16, height:16, borderRadius:"50%", border:"1.5px solid", display:"flex",
     alignItems:"center", justifyContent:"center", flexShrink:0 },
   radioDot:{ width:7, height:7, borderRadius:"50%" },
-  tierDesc:{ fontSize:13, color:"#94a3b8", lineHeight:1.5, paddingLeft:24, display:"block" },
+  tierDesc:{ fontSize:14, color:"#c0cad6", lineHeight:1.5, paddingLeft:24, display:"block" },
   completeBanner:{ display:"flex", alignItems:"center", gap:18, background:"rgba(52,211,153,0.07)",
     border:"1px solid rgba(52,211,153,0.25)", borderRadius:10, padding:"18px 22px", flexWrap:"wrap" },
   completeIcon:{ fontSize:28, color:"#34d399" },
   completeTitle:{ fontSize:16, fontWeight:700, color:"#34d399", margin:"0 0 4px" },
-  completeSub:{ fontSize:14, color:"#94a3b8" },
+  completeSub:{ fontSize:15, color:"#c0cad6" },
 };
 
 const r = {
@@ -1012,28 +1231,28 @@ const r = {
     borderBottom:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.03)" },
   statCard:{ padding:"22px 0", display:"flex", flexDirection:"column", alignItems:"center",
     background:"#080a0f", gap:5 },
-  statVal:{ fontSize:30, fontWeight:700, lineHeight:1 },
-  statLabel:{ fontSize:11, color:"#94a3b8", letterSpacing:"0.08em", textTransform:"uppercase" },
+  statVal:{ fontSize:32, fontWeight:700, lineHeight:1 },
+  statLabel:{ fontSize:12, color:"#c0cad6", letterSpacing:"0.08em", textTransform:"uppercase" },
   toolbar:{ display:"flex", alignItems:"center", gap:10, padding:"14px 0", borderBottom:"1px solid rgba(255,255,255,0.08)", flexWrap:"wrap" },
   search:{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:6,
     padding:"8px 16px", color:"#f8fafc", fontSize:14, fontFamily:"inherit", outline:"none", width:220 },
   filterGroup:{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" },
-  filterCap:{ fontSize:11, color:"#64748b", letterSpacing:"0.1em", textTransform:"uppercase", marginRight:2 },
+  filterCap:{ fontSize:12, color:"#8896a8", letterSpacing:"0.1em", textTransform:"uppercase", marginRight:2 },
   table:{ width:"100%", borderCollapse:"collapse", marginTop:4 },
-  th:{ fontSize:11, letterSpacing:"0.1em", textTransform:"uppercase", color:"#64748b",
+  th:{ fontSize:11, letterSpacing:"0.1em", textTransform:"uppercase", color:"#8896a8",
     textAlign:"left", padding:"11px 14px", borderBottom:"1px solid rgba(255,255,255,0.1)", fontWeight:700 },
   td:{ padding:"14px 14px", borderBottom:"1px solid rgba(255,255,255,0.07)", verticalAlign:"middle" },
-  bName:{ fontSize:15, fontWeight:600, color:"#f8fafc", marginBottom:3 },
-  bNote:{ fontSize:13, color:"#94a3b8", maxWidth:240, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" },
-  owner:{ fontSize:14, color:"#94a3b8" },
+  bName:{ fontSize:16, fontWeight:600, color:"#f8fafc", marginBottom:3 },
+  bNote:{ fontSize:14, color:"#c0cad6", maxWidth:240, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" },
+  owner:{ fontSize:15, color:"#c0cad6" },
   pctCell:{ display:"flex", alignItems:"center", gap:8 },
   miniTrack:{ width:64, height:3, background:"rgba(255,255,255,0.12)", borderRadius:2, overflow:"hidden" },
   miniFill:{ height:"100%", borderRadius:2, transition:"width .4s" },
-  pctNum:{ fontSize:13 },
-  date:{ fontSize:13, color:"#94a3b8" },
+  pctNum:{ fontSize:14 },
+  date:{ fontSize:14, color:"#c0cad6" },
   empty:{ textAlign:"center", padding:"80px 0" },
   emptyIcon:{ fontSize:42, color:"rgba(255,255,255,0.08)", marginBottom:14 },
-  emptyText:{ fontSize:15, color:"#64748b", marginBottom:20 },
+  emptyText:{ fontSize:15, color:"#8896a8", marginBottom:20 },
 };
 
 const o = {
@@ -1051,7 +1270,7 @@ const css = `
   .side-item {
     display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px;
     background: none; border: none; color: #94a3b8; font-family: 'DM Mono',monospace;
-    font-size: 14px; border-radius: 6px; cursor: pointer; transition: all .12s; text-align: left;
+    font-size: 15px; border-radius: 6px; cursor: pointer; transition: all .12s; text-align: left;
   }
   .side-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
   .side-item.active { background: rgba(167,139,250,0.12); color: #f8fafc; border: 1px solid rgba(167,139,250,0.25); }
@@ -1059,7 +1278,7 @@ const css = `
   /* Top bar buttons */
   .tb-btn {
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-    color: #cbd5e1; font-family: 'DM Mono',monospace; font-size: 14px; font-weight: 600;
+    color: #cbd5e1; font-family: 'DM Mono',monospace; font-size: 15px; font-weight: 600;
     padding: 7px 16px; border-radius: 6px; cursor: pointer; transition: all .12s; white-space: nowrap;
   }
   .tb-btn:hover { background: rgba(255,255,255,0.13); color: #f8fafc; }
@@ -1077,7 +1296,7 @@ const css = `
 
   /* Segmented status buttons */
   .seg-btn { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
-    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 12px; font-weight: 700;
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 13px; font-weight: 700;
     letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 6px; border-radius: 6px;
     cursor: pointer; transition: all .12s; }
   .seg-btn:hover { background: rgba(255,255,255,0.09); color: #e2e8f0; }
@@ -1092,7 +1311,7 @@ const css = `
     display: inline-flex; align-items: center; gap: 7px;
     background: transparent; border: 1px solid; border-radius: 8px;
     padding: 7px 14px; cursor: pointer; font-family: 'DM Mono',monospace;
-    font-size: 13px; font-weight: 600; transition: all .12s;
+    font-size: 14px; font-weight: 600; transition: all .12s;
   }
   .radio-opt:hover { background: rgba(167,139,250,0.07) !important; color: #c4b5fd !important; border-color: rgba(167,139,250,0.3) !important; }
 
@@ -1110,7 +1329,7 @@ const css = `
 
   /* Filter buttons */
   .filter-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
-    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 13px; font-weight: 600;
+    color: #94a3b8; font-family: 'DM Mono',monospace; font-size: 14px; font-weight: 600;
     letter-spacing: 0.04em; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all .12s; }
   .filter-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
   .filter-btn.on { background: rgba(255,255,255,0.11); color: #f8fafc; border-color: rgba(255,255,255,0.25); }
@@ -1127,11 +1346,15 @@ const css = `
   input::placeholder { color: #64748b; }
   input:focus { border-color: rgba(167,139,250,0.5) !important; outline: none; }
 
+  /* Commit type cards */
+  .type-card { transition: all .15s; cursor: pointer; }
+  .type-card:hover { background: rgba(255,255,255,0.04) !important; }
+
   /* Inline note field */
   .note-field {
     width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px; padding: 7px 12px; color: #94a3b8; font-family: 'DM Mono',monospace;
-    font-size: 13px; outline: none; transition: border-color .15s; box-sizing: border-box;
+    font-size: 14px; outline: none; transition: border-color .15s; box-sizing: border-box;
   }
   .note-field:focus { border-color: rgba(167,139,250,0.4) !important; color: #e2e8f0; }
   .note-field::placeholder { color: #475569; font-style: italic; }
