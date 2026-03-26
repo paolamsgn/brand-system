@@ -173,7 +173,7 @@ const DEMO = {
 
 function App() {
   const [brands, setBrands]     = useState([DEMO]);
-  const [view, setView]         = useState("new"); // "new" | "checklist" | "registry"
+  const [view, setView]         = useState("new"); // "new" | "checklist" | "registry" | "workflow" | "contentds"
   const [activeId, setActiveId] = useState(null);
   const [confirmDel, setConfirmDel] = useState(null);
 
@@ -182,7 +182,8 @@ function App() {
   const openBrand  = id => { setActiveId(id); setView("checklist"); };
   const goNew      = () => { setActiveId(null); setView("new"); };
   const goRegistry = () => setView("registry");
-  const goWorkflow = () => setView("workflow");
+  const goWorkflow   = () => setView("workflow");
+  const goContentDS  = () => setView("contentds");
 
   const saveNew = data => {
     const b = { id:Date.now(), ...data, createdAt:new Date().toISOString().slice(0,10) };
@@ -230,6 +231,7 @@ function App() {
           <SideItem icon="≡" label="Registro brand" active={view==="registry"} onClick={goRegistry}
             badge={brands.length} />
           <SideItem icon="◈" label="Workflows" active={view==="workflow"} onClick={goWorkflow} />
+          <SideItem icon="✍" label="Content Design System" active={view==="contentds"} onClick={goContentDS} />
 
           {brands.length > 0 && (
             <>
@@ -266,6 +268,7 @@ function App() {
               {view==="new"       && "Nuovo brand"}
               {view==="registry"  && "Registro brand"}
               {view==="workflow"   && "Workflows"}
+              {view==="contentds"  && "Content Design System"}
               {view==="checklist" && active?.name}
             </span>
             {view==="checklist" && active && (
@@ -307,6 +310,7 @@ function App() {
           {view==="checklist" && active && <ChecklistView brand={active} onPatch={patchCL} onPatchBrand={patchBrand} onGoRegistry={goRegistry} />}
           {view==="registry"  && <RegistryView brands={brands} onOpen={openBrand} onDelete={id=>setConfirmDel(id)} onNew={goNew} />}
           {view==="workflow"   && <WorkflowView />}
+          {view==="contentds"  && <ContentDSView />}
         </div>
       </div>
 
@@ -607,6 +611,7 @@ function WorkflowView() {
     { id:"gradient",  label:"Creazione Gradiente" },
     { id:"newicon",   label:"Nuova Icona" },
     { id:"typography", label:"Typography Pipeline" },
+    { id:"content",   label:"Content Design System" },
   ];
   return (
     <div>
@@ -628,6 +633,7 @@ function WorkflowView() {
       {tab==="gradient" && <GradientWorkflowView />}
       {tab==="newicon"  && <NewIconWorkflowView />}
       {tab==="typography" && <TypographyWorkflowView />}
+      {tab==="content"    && <ContentDSView />}
     </div>
   );
 }
@@ -1340,6 +1346,338 @@ function TypographyWorkflowView() {
               ))}
             </div>
           ))}
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+
+// ─── CONTENT DESIGN SYSTEM VIEW ──────────────────────────────────────────────
+
+const CDS_TIER_MAP = [
+  { modulo:"11 · UX Writing & Microcopy",    gold:"Completo (8 pt)",  silver:"Completo (8 pt)",  bronze:"Non richiesto" },
+  { modulo:"12 · Tono e Voce Espanso",       gold:"Completo (5 pt)",  silver:"Completo (5 pt)",  bronze:"Base (2 pt)" },
+  { modulo:"13 · Editorial & Content Types", gold:"Completo (6 pt)",  silver:"Opzionale",         bronze:"Non richiesto" },
+  { modulo:"14 · Naming & Terminologia",     gold:"Completo (5 pt)",  silver:"Completo (5 pt)",  bronze:"Base (2 pt)" },
+  { modulo:"Totale CDS per tier",            gold:"24 pt",            silver:"18 pt",             bronze:"4 pt" },
+];
+
+const CDS_SECTIONS = [
+  {
+    id:"s11", num:"11", title:"UX Writing & Microcopy",
+    sub:"Come il brand scrive i testi dell’interfaccia: ogni label, ogni CTA, ogni messaggio.",
+    pts:8,
+    items:[
+      "Label guidelines definite (form labels, navigation, header, tab labels)",
+      "CTA framework: gerarchia primario / secondario / terziario con esempi reali",
+      "Pattern messaggi di errore: formula Cosa e successo + Come risolvere",
+      "Pattern messaggi di successo e feedback positivo",
+      "Copy per empty states (illustrazione opzionale + headline + body + CTA)",
+      "Copy per loading states (progressive disclosure, skeleton text)",
+      "Tooltip & helper text: regole di lunghezza, trigger, posizione",
+      "Placeholder text: cosa si mette (mai label replacement), esempi per tipo di campo",
+    ],
+    tips:[
+      { label:"Labels", text:'Usa sostantivi o frasi nominali brevi. Preferisci "Indirizzo email" a "Inserisci il tuo indirizzo email".' },
+      { label:"CTA", text:'Il testo deve descrivere azione + oggetto quando serve chiarezza. "Salva modifiche" e meglio di "Salva".' },
+      { label:"Errori", text:'Formula in tre parti: (1) Cosa e andato storto, (2) Perche e successo, (3) Come l’utente puo risolverlo.' },
+      { label:"Empty states", text:'Non lasciare mai un’area vuota senza spiegazione. Struttura: headline + contesto + CTA primaria.' },
+    ],
+  },
+  {
+    id:"s12", num:"12", title:"Tono e Voce — Espanso",
+    sub:"Espansione della sezione 06 base. Definisce la personalita del brand in ogni contesto e canale.",
+    pts:5,
+    items:[
+      "Brand voice pillars: 3-5 aggettivi con esempi di cosa significa e cosa NON significa ciascuno",
+      "Tono scale: matrice contesto x tono per i 4 scenari chiave",
+      "Do’s & Don’ts per contesto: almeno 3 esempi prima/dopo per ogni scenario",
+      "Guida tono per canale: app UI, email transazionali, notifiche push, onboarding",
+      "Content samples: 5+ esempi di rewrite che mostrano la brand voice in azione",
+    ],
+    matrix:[
+      { ctx:"Informativo",    tono:"Neutro, chiaro",        car:"Fatti prima, spiegazioni dopo" },
+      { ctx:"Celebrativo",    tono:"Caldo, entusiasta",     car:"Energia contenuta, mai esagerata" },
+      { ctx:"Critico (errori)",tono:"Empatico, fattuale",   car:"Mai colpevolizzante, orientato alla soluzione" },
+      { ctx:"Urgente",        tono:"Diretto, rassicurante", car:"Urgenza senza allarmismo" },
+    ],
+  },
+  {
+    id:"s13", num:"13", title:"Editorial & Content Types",
+    sub:"Regole per strutturare e scrivere i contenuti in ogni formato.",
+    pts:6,
+    items:[
+      "Headline hierarchy: regole d’uso per H1-H4 (quando usarli, lunghezza max, capitalizzazione)",
+      "Body copy guidelines: lunghezza per tipo di schermata, leggibilita, scannerizzabilita",
+      "Content templates: struttura per Card, Modal, Onboarding step, Notifica push/in-app",
+      "Guida numeri, date, valute e simboli (formato locale, abbreviazioni ammesse)",
+      "Regole punteggiatura e capitalizzazione (sentence case vs title case)",
+      "SEO & metadata text: title tag, meta description, alt text, aria-label",
+    ],
+    rules:[
+      { el:"Titolo pagina (H1)",       fmt:"Sentence case, niente punto", ex:'"Gestisci il tuo profilo"' },
+      { el:"Heading sezione (H2-H3)", fmt:"Sentence case",                ex:'"Impostazioni di sicurezza"' },
+      { el:"CTA button",              fmt:"Title case o sentence case (scegli uno, applica sempre)", ex:'"Crea account"' },
+      { el:"Messaggi di sistema",     fmt:"Sentence case, con punto se > 1 frase", ex:'"File caricato. Controlla l’anteprima."' },
+      { el:"Numeri",                  fmt:"Formato locale IT",             ex:'"\u20ac 1.290,50"' },
+      { el:"Date",                    fmt:"GG mese AAAA",                  ex:'"12 marzo 2026"' },
+    ],
+  },
+  {
+    id:"s14", num:"14", title:"Naming & Terminologia",
+    sub:"Il glossario ufficiale del brand: cosa si chiama come, cosa non si dice mai.",
+    pts:5,
+    items:[
+      "Glossario ufficiale del prodotto: almeno 10 termini chiave con definizione e contesto d’uso",
+      "Naming dei componenti UI: tabella di corrispondenza tra nome DS e nome nel prodotto brand",
+      "Lista termini da evitare (banned terms): termini legali, sensibili, deprecati o fuorvianti",
+      "Terminologia tecnica per developer: naming convention token, variabili CSS, naming nei commit/PR",
+      "Strategia di localizzazione: lingue supportate, gestione plurali, date/numeri, testo RTL se necessario",
+    ],
+    banned:[
+      { termine:"Errore fatale",  problema:"Allarmista, poco chiaro",    alt:'"Non e stato possibile completare l’azione"' },
+      { termine:"Clicca qui",     problema:"Non accessibile, vago",       alt:'Descrivere l’azione: "Vai alle impostazioni"' },
+      { termine:"Utente finale",  problema:"Desueto, distante",           alt:'"Persona" o il nome specifico del ruolo' },
+    ],
+  },
+];
+
+const CDS_PROGRESS = [
+  { tier:"Gold",   emoji:"🥇", color:"#C9A84C", total:56, bs:32, cds:24 },
+  { tier:"Silver", emoji:"🥈", color:"#c0cad6", total:50, bs:32, cds:18 },
+  { tier:"Bronze", emoji:"🥉", color:"#cd7f5a", total:36, bs:32, cds:4  },
+];
+
+function ContentDSView() {
+  const [openSec, setOpenSec] = useState(null);
+
+  return (
+    <div style={wf.wrap}>
+
+      {/* Intro */}
+      <div style={{...wf.intro, borderColor:"rgba(52,211,153,0.2)", background:"rgba(52,211,153,0.05)"}}>
+        <div style={{...wf.introIcon, color:"#34d399"}}>✍</div>
+        <div>
+          <div style={wf.introTitle}>Content Design System</div>
+          <div style={wf.introSub}>
+            Il layer linguistico del Brand System. Definisce come ogni brand comunica nei testi di interfaccia,
+            nel tono, nella struttura dei contenuti e nella terminologia.
+          </div>
+          <div style={{display:"flex",gap:8,marginTop:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"#34d399",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.25)",padding:"3px 10px",borderRadius:20}}>v1.0 · 2026-03-26</span>
+            <span style={{fontSize:12,color:"#a78bfa",background:"rgba(167,139,250,0.1)",border:"1px solid rgba(167,139,250,0.2)",padding:"3px 10px",borderRadius:20}}>4 moduli · sezioni 11-14</span>
+            <span style={{fontSize:12,color:"#f8fafc",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",padding:"3px 10px",borderRadius:20}}>24 checkpoint totali</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Formula */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>OVERVIEW</div>
+        <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"16px 20px",border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:14,color:"#c4b5fd",lineHeight:2}}>
+          Brand System esistente (32 pt) + Content DS (24 pt) = <strong style={{color:"#f8fafc"}}>56 pt totali</strong>
+        </div>
+        <div style={{fontSize:13,color:"#8896a8",lineHeight:1.7}}>
+          Il CDS si aggiunge alle 10 sezioni esistenti come <strong style={{color:"#f8fafc"}}>4 nuovi moduli (sezioni 11-14)</strong>.
+          Il modulo 12 e un’espansione della sezione 06 (Tono e Voce) gia presente nel Brand System.
+        </div>
+      </div>
+
+      {/* Tier map */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>MAPPA TIER x MODULI CDS</div>
+        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",
+            background:"rgba(255,255,255,0.04)",padding:"10px 14px",
+            fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+            <span>Modulo</span>
+            <span style={{color:"#C9A84C"}}>Gold</span>
+            <span style={{color:"#c0cad6"}}>Silver</span>
+            <span style={{color:"#cd7f5a"}}>Bronze</span>
+          </div>
+          {CDS_TIER_MAP.map((row,i) => (
+            <div key={row.modulo} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",
+              padding:"10px 14px",fontSize:13,
+              borderTop:"1px solid rgba(255,255,255,0.06)",
+              background:i===CDS_TIER_MAP.length-1?"rgba(255,255,255,0.03)":"transparent",
+              fontWeight:i===CDS_TIER_MAP.length-1?700:400}}>
+              <span style={{color:i===CDS_TIER_MAP.length-1?"#f8fafc":"#c0cad6"}}>{row.modulo}</span>
+              <span style={{color: row.gold.includes("Non") ? "#475569" : "#34d399",fontSize:12}}>{row.gold}</span>
+              <span style={{color: row.silver.includes("Non")||row.silver==="Opzionale" ? "#475569" : "#34d399",fontSize:12}}>{row.silver}</span>
+              <span style={{color: row.bronze.includes("Non") ? "#475569" : "#fb923c",fontSize:12}}>{row.bronze}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sections 11-14 */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>SEZIONI 11-14</div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {CDS_SECTIONS.map(sec => {
+            const open = openSec===sec.id;
+            return (
+              <div key={sec.id} style={{background:"#0d0f14",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,overflow:"hidden",transition:"border-color .2s"}}>
+                {/* Header — always visible, click to toggle */}
+                <div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 20px",cursor:"pointer"}}
+                  onClick={()=>setOpenSec(open?null:sec.id)}>
+                  <span style={{fontSize:11,fontWeight:700,color:"#c4b5fd",letterSpacing:"0.12em"}}>{sec.num}</span>
+                  <span style={{fontSize:16,fontWeight:700,color:"#f8fafc",flex:1}}>{sec.title}</span>
+                  <span style={{fontSize:12,color:"#34d399",background:"rgba(52,211,153,0.1)",
+                    border:"1px solid rgba(52,211,153,0.2)",padding:"2px 10px",borderRadius:20}}>
+                    {sec.pts} pt
+                  </span>
+                  <span style={{fontSize:13,color:"#8896a8",transition:"transform .2s",
+                    transform:open?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                </div>
+
+                {/* Body — collapsible */}
+                {open && (
+                  <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",padding:"16px 20px",display:"flex",flexDirection:"column",gap:14}}>
+                    <div style={{fontSize:13,color:"#8896a8",fontStyle:"italic"}}>{sec.sub}</div>
+
+                    {/* Checkpoints */}
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>CHECKPOINT</div>
+                      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                        {sec.items.map((item,i) => (
+                          <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                            <span style={{fontSize:11,color:"#a78bfa",fontWeight:700,minWidth:28,flexShrink:0}}>{sec.num}.{i+1}</span>
+                            <span style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tips for s11 */}
+                    {sec.tips && (
+                      <div>
+                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>LINEE GUIDA OPERATIVE</div>
+                        {sec.tips.map(t => (
+                          <div key={t.label} style={{marginBottom:10,padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:8,borderLeft:"2px solid #a78bfa"}}>
+                            <div style={{fontSize:13,fontWeight:700,color:"#c4b5fd",marginBottom:4}}>{t.label}</div>
+                            <div style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{t.text}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Matrix for s12 */}
+                    {sec.matrix && (
+                      <div>
+                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>MATRICE TONO x CONTESTO</div>
+                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                            <span>Contesto</span><span>Tono</span><span>Caratteristica</span>
+                          </div>
+                          {sec.matrix.map(row => (
+                            <div key={row.ctx} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                              <span style={{color:"#f8fafc",fontWeight:600}}>{row.ctx}</span>
+                              <span style={{color:"#a78bfa"}}>{row.tono}</span>
+                              <span style={{color:"#8896a8",fontSize:12}}>{row.car}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rules for s13 */}
+                    {sec.rules && (
+                      <div>
+                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>REGOLE TIPOGRAFICHE</div>
+                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                            <span>Elemento</span><span>Formato</span><span>Esempio</span>
+                          </div>
+                          {sec.rules.map(row => (
+                            <div key={row.el} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                              <span style={{color:"#f8fafc",fontWeight:600}}>{row.el}</span>
+                              <span style={{color:"#c0cad6",fontSize:12}}>{row.fmt}</span>
+                              <code style={{color:"#34d399",fontSize:12}}>{row.ex}</code>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Banned for s14 */}
+                    {sec.banned && (
+                      <div>
+                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE BANNED TERMS</div>
+                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                            <span>Termine vietato</span><span>Problema</span><span>Alternativa</span>
+                          </div>
+                          {sec.banned.map(row => (
+                            <div key={row.termine} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                              <span style={{color:"#f87171",fontWeight:600,textDecoration:"line-through"}}>{row.termine}</span>
+                              <span style={{color:"#8896a8",fontSize:12}}>{row.problema}</span>
+                              <span style={{color:"#34d399",fontSize:12}}>{row.alt}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Progress by tier */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>CHECKPOINT TOTALI PER TIER</div>
+        <div style={{display:"flex",gap:8}}>
+          {CDS_PROGRESS.map(t => (
+            <div key={t.tier} style={{flex:1,background:"#0d0f14",border:"1px solid rgba(255,255,255,0.08)",
+              borderRadius:10,padding:"18px 16px",textAlign:"center"}}>
+              <div style={{fontSize:22,marginBottom:6}}>{t.emoji}</div>
+              <div style={{fontSize:26,fontWeight:700,color:t.color,lineHeight:1}}>{t.total}</div>
+              <div style={{fontSize:11,color:"#7a8899",textTransform:"uppercase",letterSpacing:"0.1em",marginTop:4}}>checkpoint</div>
+              <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",marginTop:10,paddingTop:10,display:"flex",justifyContent:"center",gap:12}}>
+                <div style={{fontSize:12,color:"#8896a8"}}>BS <span style={{color:t.color,fontWeight:700}}>{t.bs}</span></div>
+                <div style={{fontSize:12,color:"#8896a8"}}>CDS <span style={{color:t.color,fontWeight:700}}>{t.cds}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:12,color:"#7a8899",fontStyle:"italic",lineHeight:1.6}}>
+          Un brand Bronze al 100% ha completato 36/36, non 56/56. Il contatore e tier-aware.
+        </div>
+      </div>
+
+      {/* Status progression */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>WORKFLOW ONBOARDING AGGIORNATO</div>
+        <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"16px 20px",
+          border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:13,
+          color:"#c0cad6",lineHeight:2.2}}>
+          <span style={{color:"#f8fafc"}}>Nuovo brand</span>{" ↓ "}<br/>
+          <span style={{color:"#a78bfa"}}>Meta + Tier</span>{" ←— determina quali sezioni CDS sono obbligatorie "}<br/>
+          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
+          <span style={{color:"#34d399"}}>Checklist Brand System</span>{" (sezioni 01-10) "}<br/>
+          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
+          <span style={{color:"#34d399"}}>Checklist Content DS</span>{" (sezioni 11-14, subset per tier) "}<br/>
+          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
+          <span style={{color:"#f8fafc"}}>Registro</span>{" → Draft → In Review → Active"}
+        </div>
+        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",background:"rgba(255,255,255,0.04)",
+            padding:"8px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+            <span>Status</span><span>Condizione</span>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+            <span style={{color:"#fb923c",fontWeight:700}}>Draft → In Review</span>
+            <span style={{color:"#c0cad6"}}>Brand System &gt; 80% E almeno 1 modulo CDS completato</span>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+            <span style={{color:"#34d399",fontWeight:700}}>In Review → Active</span>
+            <span style={{color:"#c0cad6"}}>100% su entrambi i layer + owner approvazione</span>
+          </div>
         </div>
       </div>
 
