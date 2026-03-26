@@ -1357,89 +1357,97 @@ function TypographyWorkflowView() {
 // ─── CONTENT DESIGN SYSTEM VIEW ──────────────────────────────────────────────
 
 const CDS_TIER_MAP = [
-  { modulo:"11 · UX Writing & Microcopy",    gold:"Completo (8 pt)",  silver:"Completo (8 pt)",  bronze:"Non richiesto" },
-  { modulo:"12 · Tono e Voce Espanso",       gold:"Completo (5 pt)",  silver:"Completo (5 pt)",  bronze:"Base (2 pt)" },
-  { modulo:"13 · Editorial & Content Types", gold:"Completo (6 pt)",  silver:"Opzionale",         bronze:"Non richiesto" },
-  { modulo:"14 · Naming & Terminologia",     gold:"Completo (5 pt)",  silver:"Completo (5 pt)",  bronze:"Base (2 pt)" },
-  { modulo:"Totale CDS per tier",            gold:"24 pt",            silver:"18 pt",             bronze:"4 pt" },
+  { modulo:"11 · UX Writing & Microcopy",    gold:"Completo (8 pt)", silver:"Completo (8 pt)", bronze:"Non richiesto" },
+  { modulo:"12 · Tono e Voce Espanso",       gold:"Completo (5 pt)", silver:"Completo (5 pt)", bronze:"Base (2 pt)" },
+  { modulo:"13 · Editorial & Content Types", gold:"Completo (6 pt)", silver:"Opzionale",        bronze:"Non richiesto" },
+  { modulo:"14 · Naming & Terminologia",     gold:"Completo (5 pt)", silver:"Completo (5 pt)", bronze:"Base (2 pt)" },
+  { modulo:"Totale CDS per tier",            gold:"24 pt",           silver:"18 pt",            bronze:"4 pt" },
 ];
 
 const CDS_SECTIONS = [
   {
-    id:"s11", num:"11", title:"UX Writing & Microcopy",
-    sub:"Come il brand scrive i testi dell’interfaccia: ogni label, ogni CTA, ogni messaggio.",
-    pts:8,
+    id:"s11", num:"11", title:"UX Writing & Microcopy", pts:8,
+    intro:"Come il brand scrive i testi dell\u2019interfaccia: ogni label, ogni CTA, ogni messaggio.",
     items:[
-      "Label guidelines definite (form labels, navigation, header, tab labels)",
-      "CTA framework: gerarchia primario / secondario / terziario con esempi reali",
-      "Pattern messaggi di errore: formula Cosa e successo + Come risolvere",
-      "Pattern messaggi di successo e feedback positivo",
-      "Copy per empty states (illustrazione opzionale + headline + body + CTA)",
-      "Copy per loading states (progressive disclosure, skeleton text)",
-      "Tooltip & helper text: regole di lunghezza, trigger, posizione",
-      "Placeholder text: cosa si mette (mai label replacement), esempi per tipo di campo",
+      {n:"11.1", text:'Label guidelines definite (form labels, navigation, header, tab labels)'},
+      {n:"11.2", text:'CTA framework: gerarchia primario / secondario / terziario con esempi reali'},
+      {n:"11.3", text:'Pattern messaggi di errore: formula "Cosa \u00e8 successo + Come risolvere"'},
+      {n:"11.4", text:'Pattern messaggi di successo e feedback positivo'},
+      {n:"11.5", text:'Copy per empty states (illustrazione opzionale + headline + body + CTA)'},
+      {n:"11.6", text:'Copy per loading states (progressive disclosure, skeleton text)'},
+      {n:"11.7", text:'Tooltip & helper text: regole di lunghezza, trigger, posizione'},
+      {n:"11.8", text:'Placeholder text: cosa si mette (mai label replacement), esempi per tipo di campo'},
     ],
-    tips:[
-      { label:"Labels", text:'Usa sostantivi o frasi nominali brevi. Preferisci "Indirizzo email" a "Inserisci il tuo indirizzo email".' },
-      { label:"CTA", text:'Il testo deve descrivere azione + oggetto quando serve chiarezza. "Salva modifiche" e meglio di "Salva".' },
-      { label:"Errori", text:'Formula in tre parti: (1) Cosa e andato storto, (2) Perche e successo, (3) Come l’utente puo risolverlo.' },
-      { label:"Empty states", text:'Non lasciare mai un’area vuota senza spiegazione. Struttura: headline + contesto + CTA primaria.' },
+    guidelines:[
+      { label:"Labels", text:'Usa sostantivi o frasi nominali brevi. Evita verbi all\u2019imperativo nelle label statiche. Preferisci "Indirizzo email" a "Inserisci il tuo indirizzo email".' },
+      { label:"CTA",    text:'"Salva modifiche" \u00e8 meglio di "Salva". "Crea account gratuito" \u00e8 meglio di "Registrati". Il testo deve descrivere azione + oggetto.' },
+      { label:"Errori", text:'Segui la formula in 3 parti: (1) Cosa \u00e8 andato storto, (2) Perch\u00e9 \u00e8 successo (se utile), (3) Come l\u2019utente pu\u00f2 risolverlo. \u2705 "Il numero di carta non \u00e8 valido. Controlla le 16 cifre sul fronte." \u274c "Errore. Riprova."' },
+      { label:"Empty states", text:'Non lasciare mai un\u2019area vuota senza spiegazione. Struttura: headline motivazionale + frase di contesto + CTA primaria.' },
     ],
   },
   {
-    id:"s12", num:"12", title:"Tono e Voce — Espanso",
-    sub:"Espansione della sezione 06 base. Definisce la personalita del brand in ogni contesto e canale.",
-    pts:5,
+    id:"s12", num:"12", title:"Tono e Voce \u2014 Espanso", pts:5,
+    intro:"Espansione della sezione 06 base. Definisce la personalit\u00e0 del brand attraverso la scrittura in ogni contesto e canale.",
     items:[
-      "Brand voice pillars: 3-5 aggettivi con esempi di cosa significa e cosa NON significa ciascuno",
-      "Tono scale: matrice contesto x tono per i 4 scenari chiave",
-      "Do’s & Don’ts per contesto: almeno 3 esempi prima/dopo per ogni scenario",
-      "Guida tono per canale: app UI, email transazionali, notifiche push, onboarding",
-      "Content samples: 5+ esempi di rewrite che mostrano la brand voice in azione",
+      {n:"12.1", text:'Brand voice pillars: 3-5 aggettivi con esempi di cosa significa e cosa NON significa ciascuno'},
+      {n:"12.2", text:'Tono scale: matrice contesto \u00d7 tono per i 4 scenari chiave'},
+      {n:"12.3", text:"Do\u2019s & Don\u2019ts per contesto: almeno 3 esempi prima/dopo per ogni scenario"},
+      {n:"12.4", text:'Guida tono per canale: app UI, email transazionali, notifiche push, onboarding'},
+      {n:"12.5", text:'Content samples: 5+ esempi di rewrite che mostrano la brand voice in azione'},
     ],
+    template:`Aggettivo: [es. Diretto]
+Significa:  Andiamo al punto, senza giri di parole.
+NON significa: Brusco o scortese.
+Esempio si: "Il pagamento e andato a buon fine."
+Esempio no: "La transazione e stata elaborata con successo dal sistema."`,
     matrix:[
-      { ctx:"Informativo",    tono:"Neutro, chiaro",        car:"Fatti prima, spiegazioni dopo" },
-      { ctx:"Celebrativo",    tono:"Caldo, entusiasta",     car:"Energia contenuta, mai esagerata" },
-      { ctx:"Critico (errori)",tono:"Empatico, fattuale",   car:"Mai colpevolizzante, orientato alla soluzione" },
-      { ctx:"Urgente",        tono:"Diretto, rassicurante", car:"Urgenza senza allarmismo" },
+      { ctx:"Informativo",     tono:"Neutro, chiaro",        car:"Fatti prima, spiegazioni dopo" },
+      { ctx:"Celebrativo",     tono:"Caldo, entusiasta",     car:"Energia contenuta, mai esagerata" },
+      { ctx:"Critico (errori)",tono:"Empatico, fattuale",    car:"Mai colpevolizzante, orientato alla soluzione" },
+      { ctx:"Urgente",         tono:"Diretto, rassicurante", car:"Urgenza senza allarmismo" },
     ],
   },
   {
-    id:"s13", num:"13", title:"Editorial & Content Types",
-    sub:"Regole per strutturare e scrivere i contenuti in ogni formato.",
-    pts:6,
+    id:"s13", num:"13", title:"Editorial & Content Types", pts:6,
+    intro:"Regole per strutturare e scrivere i contenuti in ogni formato.",
     items:[
-      "Headline hierarchy: regole d’uso per H1-H4 (quando usarli, lunghezza max, capitalizzazione)",
-      "Body copy guidelines: lunghezza per tipo di schermata, leggibilita, scannerizzabilita",
-      "Content templates: struttura per Card, Modal, Onboarding step, Notifica push/in-app",
-      "Guida numeri, date, valute e simboli (formato locale, abbreviazioni ammesse)",
-      "Regole punteggiatura e capitalizzazione (sentence case vs title case)",
-      "SEO & metadata text: title tag, meta description, alt text, aria-label",
+      {n:"13.1", text:"Headline hierarchy: regole d\u2019uso per H1\u2013H4 (quando usarli, lunghezza max, capitalizzazione)"},
+      {n:"13.2", text:"Body copy guidelines: lunghezza per tipo di schermata, leggibilit\u00e0, scannerizzabilit\u00e0"},
+      {n:"13.3", text:"Content templates: struttura per Card, Modal, Onboarding step, Notifica push/in-app"},
+      {n:"13.4", text:"Guida numeri, date, valute e simboli (formato locale, abbreviazioni ammesse)"},
+      {n:"13.5", text:"Regole punteggiatura e capitalizzazione (sentence case vs title case)"},
+      {n:"13.6", text:"SEO & metadata text: title tag, meta description, alt text, aria-label"},
     ],
+    template:`[Headline \u2014 max 60 caratteri, sentence case]
+[Body \u2014 max 2 righe, 80-120 caratteri per riga]
+[CTA primaria]  [CTA secondaria opzionale]`,
     rules:[
-      { el:"Titolo pagina (H1)",       fmt:"Sentence case, niente punto", ex:'"Gestisci il tuo profilo"' },
-      { el:"Heading sezione (H2-H3)", fmt:"Sentence case",                ex:'"Impostazioni di sicurezza"' },
+      { el:"Titolo pagina (H1)",      fmt:"Sentence case, niente punto",                          ex:'"Gestisci il tuo profilo"' },
+      { el:"Heading sezione (H2-H3)", fmt:"Sentence case",                                        ex:'"Impostazioni di sicurezza"' },
       { el:"CTA button",              fmt:"Title case o sentence case (scegli uno, applica sempre)", ex:'"Crea account"' },
-      { el:"Messaggi di sistema",     fmt:"Sentence case, con punto se > 1 frase", ex:'"File caricato. Controlla l’anteprima."' },
-      { el:"Numeri",                  fmt:"Formato locale IT",             ex:'"\u20ac 1.290,50"' },
-      { el:"Date",                    fmt:"GG mese AAAA",                  ex:'"12 marzo 2026"' },
+      { el:"Messaggi di sistema",     fmt:"Sentence case, con punto se > 1 frase",                ex:'"File caricato. Controlla l\u2019anteprima."' },
+      { el:"Numeri",                  fmt:"Formato locale IT",                                    ex:'"\u20ac 1.290,50"' },
+      { el:"Date",                    fmt:"GG mese AAAA",                                         ex:'"12 marzo 2026"' },
     ],
   },
   {
-    id:"s14", num:"14", title:"Naming & Terminologia",
-    sub:"Il glossario ufficiale del brand: cosa si chiama come, cosa non si dice mai.",
-    pts:5,
+    id:"s14", num:"14", title:"Naming & Terminologia", pts:5,
+    intro:"Il glossario ufficiale del brand: cosa si chiama come, cosa non si dice mai.",
     items:[
-      "Glossario ufficiale del prodotto: almeno 10 termini chiave con definizione e contesto d’uso",
-      "Naming dei componenti UI: tabella di corrispondenza tra nome DS e nome nel prodotto brand",
-      "Lista termini da evitare (banned terms): termini legali, sensibili, deprecati o fuorvianti",
-      "Terminologia tecnica per developer: naming convention token, variabili CSS, naming nei commit/PR",
-      "Strategia di localizzazione: lingue supportate, gestione plurali, date/numeri, testo RTL se necessario",
+      {n:"14.1", text:"Glossario ufficiale del prodotto: almeno 10 termini chiave con definizione e contesto d\u2019uso"},
+      {n:"14.2", text:"Naming dei componenti UI: tabella di corrispondenza tra nome DS e nome nel prodotto brand"},
+      {n:"14.3", text:"Lista termini da evitare (banned terms): termini legali, sensibili, deprecati o fuorvianti"},
+      {n:"14.4", text:"Terminologia tecnica per developer: naming convention token, variabili CSS, naming nei commit/PR"},
+      {n:"14.5", text:"Strategia di localizzazione: lingue supportate, gestione plurali, date/numeri, testo RTL se necessario"},
+    ],
+    glossario:[
+      { termine:"Spazio di lavoro", significato:"L\u2019area dove l\u2019utente gestisce i suoi progetti", invece:'"workspace", "area", "dashboard"', note:"Capitalizzato nei titoli UI" },
+      { termine:"Componente",       significato:"Elemento UI riutilizzabile del DS",                   invece:'"widget", "blocco", "pezzo"',   note:"Termine tecnico, non in UI utente" },
     ],
     banned:[
-      { termine:"Errore fatale",  problema:"Allarmista, poco chiaro",    alt:'"Non e stato possibile completare l’azione"' },
-      { termine:"Clicca qui",     problema:"Non accessibile, vago",       alt:'Descrivere l’azione: "Vai alle impostazioni"' },
-      { termine:"Utente finale",  problema:"Desueto, distante",           alt:'"Persona" o il nome specifico del ruolo' },
+      { termine:"Errore fatale",  problema:"Allarmista, poco chiaro",  alt:'"Non \u00e8 stato possibile completare l\u2019azione"' },
+      { termine:"Clicca qui",     problema:"Non accessibile, vago",    alt:'Descrivere l\u2019azione: "Vai alle impostazioni"' },
+      { termine:"Utente finale",  problema:"Desueto, distante",        alt:'"Persona" o il nome specifico del ruolo' },
     ],
   },
 ];
@@ -1451,175 +1459,243 @@ const CDS_PROGRESS = [
 ];
 
 function ContentDSView() {
-  const [openSec, setOpenSec] = useState(null);
+  const [openSec, setOpenSec]   = useState(null);
+  const [checked, setChecked]   = useState({});
+  const toggleCheck = (id) => setChecked(prev => ({...prev, [id]: !prev[id]}));
+
+  // Count checked per section
+  const secDone = (secId) => CDS_SECTIONS.find(s=>s.id===secId)?.items.filter(i=>checked[i.n]).length || 0;
+  const secTotal= (secId) => CDS_SECTIONS.find(s=>s.id===secId)?.items.length || 0;
 
   return (
     <div style={wf.wrap}>
 
-      {/* Intro */}
-      <div style={{...wf.intro, borderColor:"rgba(52,211,153,0.2)", background:"rgba(52,211,153,0.05)"}}>
-        <div style={{...wf.introIcon, color:"#34d399"}}>✍</div>
-        <div>
+      {/* Header */}
+      <div style={{...wf.intro, borderColor:"rgba(52,211,153,0.2)", background:"rgba(52,211,153,0.04)"}}>
+        <div style={{...wf.introIcon, color:"#34d399", fontSize:24}}>✍</div>
+        <div style={{flex:1}}>
           <div style={wf.introTitle}>Content Design System</div>
           <div style={wf.introSub}>
-            Il layer linguistico del Brand System. Definisce come ogni brand comunica nei testi di interfaccia,
-            nel tono, nella struttura dei contenuti e nella terminologia.
+            Il layer linguistico del Brand System. Definisce come ogni brand comunica — nei testi di interfaccia, nel tono, nella struttura dei contenuti e nella terminologia — garantendo coerenza tra visual design e comunicazione scritta.
           </div>
-          <div style={{display:"flex",gap:8,marginTop:10,flexWrap:"wrap"}}>
-            <span style={{fontSize:12,color:"#34d399",background:"rgba(52,211,153,0.1)",border:"1px solid rgba(52,211,153,0.25)",padding:"3px 10px",borderRadius:20}}>v1.0 · 2026-03-26</span>
-            <span style={{fontSize:12,color:"#a78bfa",background:"rgba(167,139,250,0.1)",border:"1px solid rgba(167,139,250,0.2)",padding:"3px 10px",borderRadius:20}}>4 moduli · sezioni 11-14</span>
-            <span style={{fontSize:12,color:"#f8fafc",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",padding:"3px 10px",borderRadius:20}}>24 checkpoint totali</span>
+          <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"#8896a8",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",padding:"2px 10px",borderRadius:20}}>v1.0 · 2026-03-26</span>
+            <span style={{fontSize:12,color:"#8896a8",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",padding:"2px 10px",borderRadius:20}}>Design System Team</span>
+            <span style={{fontSize:12,color:"#fb923c",background:"rgba(251,146,60,0.1)",border:"1px solid rgba(251,146,60,0.25)",padding:"2px 10px",borderRadius:20}}>Draft</span>
           </div>
         </div>
       </div>
 
-      {/* Formula */}
+      {/* Overview */}
       <div style={wf.section}>
         <div style={wf.sectionLabel}>OVERVIEW</div>
-        <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"16px 20px",border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:14,color:"#c4b5fd",lineHeight:2}}>
-          Brand System esistente (32 pt) + Content DS (24 pt) = <strong style={{color:"#f8fafc"}}>56 pt totali</strong>
+        <div style={{fontSize:14,color:"#c0cad6",lineHeight:1.8,marginBottom:12}}>
+          Il CDS si aggiunge alle 10 sezioni già esistenti come{" "}
+          <strong style={{color:"#f8fafc"}}>4 nuovi moduli (sezioni 11–14)</strong> per un totale di{" "}
+          <strong style={{color:"#f8fafc"}}>24 nuovi checkpoint</strong>, portando il sistema complessivo da 32 a{" "}
+          <strong style={{color:"#34d399"}}>56 checkpoint</strong>.
         </div>
-        <div style={{fontSize:13,color:"#8896a8",lineHeight:1.7}}>
-          Il CDS si aggiunge alle 10 sezioni esistenti come <strong style={{color:"#f8fafc"}}>4 nuovi moduli (sezioni 11-14)</strong>.
-          Il modulo 12 e un’espansione della sezione 06 (Tono e Voce) gia presente nel Brand System.
+        <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"14px 18px",border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:14,color:"#c4b5fd"}}>
+          Brand System esistente (32 pt){" + "}Content DS (24 pt){" = "}
+          <strong style={{color:"#f8fafc"}}>56 pt totali</strong>
         </div>
       </div>
 
-      {/* Tier map */}
+      {/* Mappa Tier */}
       <div style={wf.section}>
-        <div style={wf.sectionLabel}>MAPPA TIER x MODULI CDS</div>
+        <div style={wf.sectionLabel}>MAPPA TIER × MODULI CDS</div>
         <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",
-            background:"rgba(255,255,255,0.04)",padding:"10px 14px",
-            fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"10px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
             <span>Modulo</span>
-            <span style={{color:"#C9A84C"}}>Gold</span>
-            <span style={{color:"#c0cad6"}}>Silver</span>
-            <span style={{color:"#cd7f5a"}}>Bronze</span>
+            <span style={{color:"#C9A84C"}}>🥇 Gold</span>
+            <span style={{color:"#c0cad6"}}>🥈 Silver</span>
+            <span style={{color:"#cd7f5a"}}>🥉 Bronze</span>
           </div>
-          {CDS_TIER_MAP.map((row,i) => (
-            <div key={row.modulo} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",
-              padding:"10px 14px",fontSize:13,
-              borderTop:"1px solid rgba(255,255,255,0.06)",
-              background:i===CDS_TIER_MAP.length-1?"rgba(255,255,255,0.03)":"transparent",
-              fontWeight:i===CDS_TIER_MAP.length-1?700:400}}>
-              <span style={{color:i===CDS_TIER_MAP.length-1?"#f8fafc":"#c0cad6"}}>{row.modulo}</span>
-              <span style={{color: row.gold.includes("Non") ? "#475569" : "#34d399",fontSize:12}}>{row.gold}</span>
-              <span style={{color: row.silver.includes("Non")||row.silver==="Opzionale" ? "#475569" : "#34d399",fontSize:12}}>{row.silver}</span>
-              <span style={{color: row.bronze.includes("Non") ? "#475569" : "#fb923c",fontSize:12}}>{row.bronze}</span>
-            </div>
-          ))}
+          {CDS_TIER_MAP.map((row,i) => {
+            const isTotal = i === CDS_TIER_MAP.length-1;
+            const goldOk  = !row.gold.includes("Non");
+            const silvOk  = !row.silver.includes("Non") && row.silver !== "Opzionale";
+            const bronzOk = !row.bronze.includes("Non");
+            return (
+              <div key={row.modulo} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",
+                padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)",
+                background:isTotal?"rgba(255,255,255,0.03)":"transparent",fontWeight:isTotal?700:400}}>
+                <span style={{color:isTotal?"#f8fafc":"#c0cad6"}}>{row.modulo}</span>
+                <span style={{color: goldOk?"#34d399":"#475569",fontSize:12}}>{row.gold}</span>
+                <span style={{color: silvOk?"#34d399":row.silver==="Opzionale"?"#fb923c":"#475569",fontSize:12}}>{row.silver}</span>
+                <span style={{color: bronzOk?"#fb923c":"#475569",fontSize:12}}>{row.bronze}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{fontSize:13,color:"#8896a8",fontStyle:"italic",lineHeight:1.6,padding:"4px 2px"}}>
+          Il modulo 12 è un'espansione della sezione 06 (Tono e Voce) già presente nel Brand System. La sezione 06 rimane come entry point base; il modulo 12 la approfondisce.
         </div>
       </div>
 
-      {/* Sections 11-14 */}
+      {/* Sezioni 11-14 collassabili */}
       <div style={wf.section}>
-        <div style={wf.sectionLabel}>SEZIONI 11-14</div>
+        <div style={wf.sectionLabel}>SEZIONI 11–14</div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
           {CDS_SECTIONS.map(sec => {
-            const open = openSec===sec.id;
+            const open = openSec === sec.id;
             return (
-              <div key={sec.id} style={{background:"#0d0f14",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,overflow:"hidden",transition:"border-color .2s"}}>
-                {/* Header — always visible, click to toggle */}
+              <div key={sec.id} style={{background:"#0d0f14",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,overflow:"hidden"}}>
                 <div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 20px",cursor:"pointer"}}
                   onClick={()=>setOpenSec(open?null:sec.id)}>
-                  <span style={{fontSize:11,fontWeight:700,color:"#c4b5fd",letterSpacing:"0.12em"}}>{sec.num}</span>
+                  <span style={{fontSize:11,fontWeight:700,color:"#c4b5fd",letterSpacing:"0.12em",flexShrink:0}}>{sec.num}</span>
                   <span style={{fontSize:16,fontWeight:700,color:"#f8fafc",flex:1}}>{sec.title}</span>
-                  <span style={{fontSize:12,color:"#34d399",background:"rgba(52,211,153,0.1)",
-                    border:"1px solid rgba(52,211,153,0.2)",padding:"2px 10px",borderRadius:20}}>
-                    {sec.pts} pt
+                  <span style={{fontSize:12,
+                    color:secDone(sec.id)===secTotal(sec.id)?"#34d399":"#a78bfa",
+                    background:secDone(sec.id)===secTotal(sec.id)?"rgba(52,211,153,0.1)":"rgba(167,139,250,0.1)",
+                    border:`1px solid ${secDone(sec.id)===secTotal(sec.id)?"rgba(52,211,153,0.2)":"rgba(167,139,250,0.2)"}`,
+                    padding:"2px 10px",borderRadius:20,flexShrink:0}}>
+                    {secDone(sec.id) > 0 ? `${secDone(sec.id)}/${secTotal(sec.id)} pt` : `${sec.pts} pt`}
                   </span>
-                  <span style={{fontSize:13,color:"#8896a8",transition:"transform .2s",
+                  <span style={{fontSize:12,color:"#8896a8",flexShrink:0,transition:"transform .2s",
                     transform:open?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
                 </div>
-
-                {/* Body — collapsible */}
                 {open && (
-                  <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",padding:"16px 20px",display:"flex",flexDirection:"column",gap:14}}>
-                    <div style={{fontSize:13,color:"#8896a8",fontStyle:"italic"}}>{sec.sub}</div>
+                  <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",padding:"16px 20px",display:"flex",flexDirection:"column",gap:16}}>
+
+                    <div style={{fontSize:13,color:"#8896a8",fontStyle:"italic",lineHeight:1.6,borderLeft:"2px solid rgba(255,255,255,0.12)",paddingLeft:12}}>{sec.intro}</div>
 
                     {/* Checkpoints */}
                     <div>
-                      <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>CHECKPOINT</div>
-                      <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                        {sec.items.map((item,i) => (
-                          <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
-                            <span style={{fontSize:11,color:"#a78bfa",fontWeight:700,minWidth:28,flexShrink:0}}>{sec.num}.{i+1}</span>
-                            <span style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{item}</span>
-                          </div>
-                        ))}
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>CHECKPOINT ({sec.pts} pt)</div>
+                        <span style={{fontSize:11,color:secDone(sec.id)===secTotal(sec.id)?"#34d399":"#8896a8",
+                          background:secDone(sec.id)===secTotal(sec.id)?"rgba(52,211,153,0.1)":"rgba(255,255,255,0.05)",
+                          border:`1px solid ${secDone(sec.id)===secTotal(sec.id)?"rgba(52,211,153,0.25)":"rgba(255,255,255,0.1)"}`,
+                          padding:"1px 8px",borderRadius:20}}>
+                          {secDone(sec.id)}/{secTotal(sec.id)}
+                        </span>
                       </div>
+                      <ul style={{listStyle:"none",margin:0,padding:0,display:"flex",flexDirection:"column",gap:2}}>
+                        {sec.items.map(item => {
+                          const chk = !!checked[item.n];
+                          return (
+                            <li key={item.n} className="check-item"
+                              style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:6,cursor:"pointer",transition:"background .1s"}}
+                              onClick={()=>toggleCheck(item.n)}>
+                              <div style={{width:20,height:20,borderRadius:4,border:`1.5px solid ${chk?"#34d399":"rgba(255,255,255,0.2)"}`,
+                                background:chk?"rgba(52,211,153,0.12)":"transparent",
+                                display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}}>
+                                {chk && <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                  <path d="M1 4L3.5 6.5L9 1" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>}
+                              </div>
+                              <span style={{fontSize:11,fontWeight:700,color:"#a78bfa",minWidth:32,flexShrink:0}}>{item.n}</span>
+                              <span style={{fontSize:13,color:chk?"#8896a8":"#c0cad6",lineHeight:1.6,
+                                textDecoration:chk?"line-through":"none",transition:"all .15s"}}>
+                                {item.text}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     </div>
 
-                    {/* Tips for s11 */}
-                    {sec.tips && (
+                    {/* Guidelines s11 */}
+                    {sec.guidelines && (
                       <div>
                         <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>LINEE GUIDA OPERATIVE</div>
-                        {sec.tips.map(t => (
-                          <div key={t.label} style={{marginBottom:10,padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:8,borderLeft:"2px solid #a78bfa"}}>
-                            <div style={{fontSize:13,fontWeight:700,color:"#c4b5fd",marginBottom:4}}>{t.label}</div>
-                            <div style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{t.text}</div>
+                        {sec.guidelines.map(g => (
+                          <div key={g.label} style={{marginBottom:8,padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:8,borderLeft:"2px solid #a78bfa"}}>
+                            <span style={{fontSize:13,fontWeight:700,color:"#c4b5fd"}}>{g.label}:{" "}</span>
+                            <span style={{fontSize:13,color:"#c0cad6",lineHeight:1.7}}>{g.text}</span>
                           </div>
                         ))}
                       </div>
                     )}
 
-                    {/* Matrix for s12 */}
-                    {sec.matrix && (
-                      <div>
-                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>MATRICE TONO x CONTESTO</div>
-                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
-                            <span>Contesto</span><span>Tono</span><span>Caratteristica</span>
-                          </div>
-                          {sec.matrix.map(row => (
-                            <div key={row.ctx} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-                              <span style={{color:"#f8fafc",fontWeight:600}}>{row.ctx}</span>
-                              <span style={{color:"#a78bfa"}}>{row.tono}</span>
-                              <span style={{color:"#8896a8",fontSize:12}}>{row.car}</span>
-                            </div>
-                          ))}
+                    {/* Template + Matrix s12 */}
+                    {sec.template && sec.matrix && (
+                      <>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE: BRAND VOICE PILLARS</div>
+                          <pre style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"14px 16px",border:"1px solid rgba(255,255,255,0.08)",fontSize:13,color:"#c4b5fd",fontFamily:"'DM Mono',monospace",lineHeight:1.8,margin:0,overflowX:"auto",whiteSpace:"pre-wrap"}}>{sec.template}</pre>
                         </div>
-                      </div>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>MATRICE TONO × CONTESTO</div>
+                          <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                              <span>Contesto</span><span>Tono</span><span>Caratteristica</span>
+                            </div>
+                            {sec.matrix.map(row => (
+                              <div key={row.ctx} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"9px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                                <span style={{color:"#f8fafc",fontWeight:600}}>{row.ctx}</span>
+                                <span style={{color:"#a78bfa"}}>{row.tono}</span>
+                                <span style={{color:"#8896a8",fontSize:12}}>{row.car}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     )}
 
-                    {/* Rules for s13 */}
-                    {sec.rules && (
-                      <div>
-                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>REGOLE TIPOGRAFICHE</div>
-                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
-                            <span>Elemento</span><span>Formato</span><span>Esempio</span>
-                          </div>
-                          {sec.rules.map(row => (
-                            <div key={row.el} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-                              <span style={{color:"#f8fafc",fontWeight:600}}>{row.el}</span>
-                              <span style={{color:"#c0cad6",fontSize:12}}>{row.fmt}</span>
-                              <code style={{color:"#34d399",fontSize:12}}>{row.ex}</code>
-                            </div>
-                          ))}
+                    {/* Template + Rules s13 */}
+                    {sec.template && sec.rules && (
+                      <>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE: CONTENT CARD</div>
+                          <pre style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"14px 16px",border:"1px solid rgba(255,255,255,0.08)",fontSize:13,color:"#c4b5fd",fontFamily:"'DM Mono',monospace",lineHeight:1.8,margin:0,whiteSpace:"pre-wrap"}}>{sec.template}</pre>
                         </div>
-                      </div>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>REGOLE TIPOGRAFICHE RAPIDE</div>
+                          <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                              <span>Elemento</span><span>Formato</span><span>Esempio</span>
+                            </div>
+                            {sec.rules.map(row => (
+                              <div key={row.el} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"9px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                                <span style={{color:"#f8fafc",fontWeight:600}}>{row.el}</span>
+                                <span style={{color:"#c0cad6",fontSize:12}}>{row.fmt}</span>
+                                <code style={{color:"#34d399",fontSize:12}}>{row.ex}</code>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     )}
 
-                    {/* Banned for s14 */}
-                    {sec.banned && (
-                      <div>
-                        <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE BANNED TERMS</div>
-                        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
-                            <span>Termine vietato</span><span>Problema</span><span>Alternativa</span>
-                          </div>
-                          {sec.banned.map(row => (
-                            <div key={row.termine} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"8px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-                              <span style={{color:"#f87171",fontWeight:600,textDecoration:"line-through"}}>{row.termine}</span>
-                              <span style={{color:"#8896a8",fontSize:12}}>{row.problema}</span>
-                              <span style={{color:"#34d399",fontSize:12}}>{row.alt}</span>
+                    {/* Glossario + Banned s14 */}
+                    {sec.glossario && (
+                      <>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE: GLOSSARIO</div>
+                          <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                              <span>Termine ufficiale</span><span>Significato</span><span>Usare invece di</span><span>Note</span>
                             </div>
-                          ))}
+                            {sec.glossario.map(row => (
+                              <div key={row.termine} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",padding:"9px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                                <span style={{color:"#f8fafc",fontWeight:600}}>{row.termine}</span>
+                                <span style={{color:"#c0cad6",fontSize:12}}>{row.significato}</span>
+                                <code style={{color:"#8896a8",fontSize:12}}>{row.invece}</code>
+                                <span style={{color:"#7a8899",fontSize:12}}>{row.note}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>TEMPLATE: BANNED TERMS</div>
+                          <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 12px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+                              <span>Termine vietato</span><span>Problema</span><span>Alternativa</span>
+                            </div>
+                            {sec.banned.map(row => (
+                              <div key={row.termine} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"9px 12px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                                <span style={{color:"#f87171",fontWeight:600,textDecoration:"line-through"}}>{row.termine}</span>
+                                <span style={{color:"#8896a8",fontSize:12}}>{row.problema}</span>
+                                <span style={{color:"#34d399",fontSize:12}}>{row.alt}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     )}
+
                   </div>
                 )}
               </div>
@@ -1628,56 +1704,100 @@ function ContentDSView() {
         </div>
       </div>
 
-      {/* Progress by tier */}
+      {/* Calcolo Progresso */}
       <div style={wf.section}>
-        <div style={wf.sectionLabel}>CHECKPOINT TOTALI PER TIER</div>
-        <div style={{display:"flex",gap:8}}>
+        <div style={wf.sectionLabel}>CALCOLO PROGRESSO AGGIORNATO</div>
+        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",background:"rgba(255,255,255,0.04)",padding:"10px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+            <span>Tier</span><span style={{textAlign:"center"}}>Totale checkpoint</span><span style={{textAlign:"center"}}>Brand System</span><span style={{textAlign:"center"}}>Content DS</span>
+          </div>
           {CDS_PROGRESS.map(t => (
-            <div key={t.tier} style={{flex:1,background:"#0d0f14",border:"1px solid rgba(255,255,255,0.08)",
-              borderRadius:10,padding:"18px 16px",textAlign:"center"}}>
-              <div style={{fontSize:22,marginBottom:6}}>{t.emoji}</div>
-              <div style={{fontSize:26,fontWeight:700,color:t.color,lineHeight:1}}>{t.total}</div>
-              <div style={{fontSize:11,color:"#7a8899",textTransform:"uppercase",letterSpacing:"0.1em",marginTop:4}}>checkpoint</div>
-              <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",marginTop:10,paddingTop:10,display:"flex",justifyContent:"center",gap:12}}>
-                <div style={{fontSize:12,color:"#8896a8"}}>BS <span style={{color:t.color,fontWeight:700}}>{t.bs}</span></div>
-                <div style={{fontSize:12,color:"#8896a8"}}>CDS <span style={{color:t.color,fontWeight:700}}>{t.cds}</span></div>
-              </div>
+            <div key={t.tier} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",padding:"12px 14px",fontSize:14,borderTop:"1px solid rgba(255,255,255,0.06)",alignItems:"center"}}>
+              <span style={{color:t.color,fontWeight:700}}>{t.emoji} {t.tier}</span>
+              <span style={{color:"#f8fafc",fontWeight:700,textAlign:"center",fontSize:18}}>{t.total}</span>
+              <span style={{color:"#8896a8",textAlign:"center"}}>{t.bs}</span>
+              <span style={{color:t.color,textAlign:"center",fontWeight:600}}>{t.cds}</span>
             </div>
           ))}
         </div>
-        <div style={{fontSize:12,color:"#7a8899",fontStyle:"italic",lineHeight:1.6}}>
-          Un brand Bronze al 100% ha completato 36/36, non 56/56. Il contatore e tier-aware.
+        <div style={{fontSize:13,color:"#8896a8",fontStyle:"italic",lineHeight:1.6,padding:"4px 2px"}}>
+          Un brand Bronze al 100% ha completato 36/36, non 56/56. Il contatore è tier-aware.
         </div>
       </div>
 
-      {/* Status progression */}
+      {/* Workflow onboarding */}
       <div style={wf.section}>
-        <div style={wf.sectionLabel}>WORKFLOW ONBOARDING AGGIORNATO</div>
-        <div style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"16px 20px",
-          border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:13,
-          color:"#c0cad6",lineHeight:2.2}}>
-          <span style={{color:"#f8fafc"}}>Nuovo brand</span>{" ↓ "}<br/>
-          <span style={{color:"#a78bfa"}}>Meta + Tier</span>{" ←— determina quali sezioni CDS sono obbligatorie "}<br/>
-          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
-          <span style={{color:"#34d399"}}>Checklist Brand System</span>{" (sezioni 01-10) "}<br/>
-          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
-          <span style={{color:"#34d399"}}>Checklist Content DS</span>{" (sezioni 11-14, subset per tier) "}<br/>
-          <span style={{color:"#c0cad6"}}>{" ↓ "}</span><br/>
-          <span style={{color:"#f8fafc"}}>Registro</span>{" → Draft → In Review → Active"}
+        <div style={wf.sectionLabel}>WORKFLOW DI ONBOARDING AGGIORNATO</div>
+        <pre style={{background:"rgba(0,0,0,0.3)",borderRadius:8,padding:"16px 20px",border:"1px solid rgba(255,255,255,0.08)",fontFamily:"'DM Mono',monospace",fontSize:13,color:"#c0cad6",lineHeight:2.2,margin:0,whiteSpace:"pre-wrap"}}>{`Nuovo brand
+    ↓
+Meta + Tier  ←── determina quali sezioni CDS sono obbligatorie
+    ↓
+Checklist Brand System (sezioni 01–10)
+    ↓
+Checklist Content DS (sezioni 11–14, subset per tier)
+    ↓
+Registro → Draft → In Review → Active`}</pre>
+        <div style={{marginTop:8}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899",marginBottom:8}}>REGOLA DI PROGRESSIONE STATUS CON CDS</div>
+          <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+            <div style={{display:"grid",gridTemplateColumns:"180px 1fr",background:"rgba(255,255,255,0.04)",padding:"8px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+              <span>Status</span><span>Condizione</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+              <span style={{color:"#fb923c",fontWeight:700}}>Draft → In Review</span>
+              <span style={{color:"#c0cad6"}}>Brand System {">"} 80% E almeno 1 modulo CDS completato</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+              <span style={{color:"#34d399",fontWeight:700}}>In Review → Active</span>
+              <span style={{color:"#c0cad6"}}>100% su entrambi i layer + owner approvazione</span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Integrazione nel Registro */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>INTEGRAZIONE NEL REGISTRO</div>
         <div style={{borderRadius:8,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",background:"rgba(255,255,255,0.04)",
-            padding:"8px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
-            <span>Status</span><span>Condizione</span>
+          <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr 1fr 1fr 80px 80px 80px",background:"rgba(255,255,255,0.04)",padding:"8px 14px",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:"#7a8899"}}>
+            <span>Brand</span><span>Tier</span><span>Status</span><span>Owner</span><span style={{textAlign:"center"}}>BS %</span><span style={{textAlign:"center"}}>CDS %</span><span style={{textAlign:"center"}}>Totale</span>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-            <span style={{color:"#fb923c",fontWeight:700}}>Draft → In Review</span>
-            <span style={{color:"#c0cad6"}}>Brand System &gt; 80% E almeno 1 modulo CDS completato</span>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"180px 1fr",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-            <span style={{color:"#34d399",fontWeight:700}}>In Review → Active</span>
-            <span style={{color:"#c0cad6"}}>100% su entrambi i layer + owner approvazione</span>
-          </div>
+          {[
+            { brand:"✨ Lumina", tier:"🥇 Gold",   status:"Active",    owner:"DS Team",  bs:"✅ 100%", cds:"✅ 100%", tot:"✅ 100%", bsC:"#34d399", cdsC:"#34d399", totC:"#34d399" },
+            { brand:"🔷 Nexar",  tier:"🥈 Silver", status:"In Review", owner:"UX Team",  bs:"✅ 100%", cds:"⚠️ 67%",  tot:"⚠️ 83%",  bsC:"#34d399", cdsC:"#fb923c", totC:"#fb923c" },
+            { brand:"🟠 Orbis",  tier:"🥉 Bronze", status:"Draft",     owner:"Client",  bs:"⚠️ 50%",  cds:"⬜ 0%",   tot:"⚠️ 29%",  bsC:"#fb923c", cdsC:"#475569", totC:"#fb923c" },
+          ].map(row => (
+            <div key={row.brand} style={{display:"grid",gridTemplateColumns:"1.5fr 1fr 1fr 1fr 80px 80px 80px",padding:"10px 14px",fontSize:13,borderTop:"1px solid rgba(255,255,255,0.06)",alignItems:"center"}}>
+              <span style={{color:"#f8fafc",fontWeight:600}}>{row.brand}</span>
+              <span style={{color:"#c0cad6"}}>{row.tier}</span>
+              <span style={{color:"#c0cad6"}}>{row.status}</span>
+              <span style={{color:"#8896a8"}}>{row.owner}</span>
+              <span style={{color:row.bsC,fontSize:12,textAlign:"center"}}>{row.bs}</span>
+              <span style={{color:row.cdsC,fontSize:12,textAlign:"center"}}>{row.cds}</span>
+              <span style={{color:row.totC,fontSize:12,textAlign:"center"}}>{row.tot}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Prossimi passi */}
+      <div style={wf.section}>
+        <div style={wf.sectionLabel}>PROSSIMI PASSI</div>
+        <div style={{...wf.stepCard,flexDirection:"column",gap:8}}>
+          {[
+            "Popolare i template — Per ogni brand attivo nel registro, compilare le sezioni 11–14 in base al tier",
+            "Integrare in Figma — Collegare i content pattern alla libreria componenti esistente",
+            "Formare il team — Condividere il glossario e i banned terms con designer, developer e copywriter",
+            "Versioning — Trattare il Content DS come documento versionato: ogni modifica significativa incrementa la versione",
+          ].map((s,i) => (
+            <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start",padding:"6px 0",borderBottom:i<3?"1px solid rgba(255,255,255,0.05)":"none"}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#a78bfa",flexShrink:0,minWidth:20}}>{i+1}.</span>
+              <span style={{fontSize:13,color:"#c0cad6",lineHeight:1.6}}>{s}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:12,color:"#7a8899",fontStyle:"italic",textAlign:"center",paddingTop:4}}>
+          Content Design System v1.0 — Design System Agnostico · Sezioni 11–14 · 24 checkpoint totali · Tier-aware
         </div>
       </div>
 
