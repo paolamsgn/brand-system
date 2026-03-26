@@ -173,22 +173,47 @@ const DEMO = {
 
 function App() {
   const [brands, setBrands]     = useState([DEMO]);
-  const [view, setView]         = useState("new"); // "new" | "checklist" | "registry" | "workflow" | "contentds"
-  const [activeId, setActiveId] = useState(null);
   const [confirmDel, setConfirmDel] = useState(null);
+
+  // ── Hash-based routing ──────────────────────────────────────────────────────
+  const parseHash = () => {
+    const h = window.location.hash.slice(1); // remove #
+    if (h.startsWith("brand/")) {
+      const id = parseInt(h.split("/")[1], 10);
+      return { view:"checklist", activeId:id };
+    }
+    if (h === "registry")  return { view:"registry",  activeId:null };
+    if (h === "workflows") return { view:"workflow",   activeId:null };
+    if (h === "content-design-system") return { view:"contentds", activeId:null };
+    return { view:"new", activeId:null }; // default: #new or empty
+  };
+
+  const [routeState, setRouteState] = useState(parseHash);
+  const view     = routeState.view;
+  const activeId = routeState.activeId;
+
+  // Sync hash → state when user navigates back/forward
+  React.useEffect(() => {
+    const onHashChange = () => setRouteState(parseHash());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  // Navigate: update hash (which triggers hashchange → state update)
+  const navigate = (hash) => { window.location.hash = hash; };
 
   const active = brands.find(b => b.id === activeId) || null;
 
-  const openBrand  = id => { setActiveId(id); setView("checklist"); };
-  const goNew      = () => { setActiveId(null); setView("new"); };
-  const goRegistry = () => setView("registry");
-  const goWorkflow   = () => setView("workflow");
-  const goContentDS  = () => setView("contentds");
+  const openBrand  = id => navigate("brand/" + id);
+  const goNew      = () => navigate("new");
+  const goRegistry = () => navigate("registry");
+  const goWorkflow   = () => navigate("workflows");
+  const goContentDS  = () => navigate("content-design-system");
 
   const saveNew = data => {
     const b = { id:Date.now(), ...data, createdAt:new Date().toISOString().slice(0,10) };
     setBrands(p => [...p, b]);
-    setActiveId(b.id); setView("checklist");
+    navigate("brand/" + b.id);
   };
 
   const patchCL = (id, patch) =>
@@ -200,7 +225,7 @@ function App() {
   const delBrand = id => {
     setBrands(p => p.filter(b => b.id!==id));
     setConfirmDel(null);
-    if (activeId===id) goNew();
+    if (activeId===id) navigate("new");
   };
 
   const activeCount  = brands.filter(b=>b.status==="active").length;
