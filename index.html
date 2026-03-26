@@ -611,7 +611,6 @@ function WorkflowView() {
     { id:"gradient",  label:"Creazione Gradiente" },
     { id:"newicon",   label:"Nuova Icona" },
     { id:"typography", label:"Typography Pipeline" },
-    { id:"content",   label:"Content Design System" },
   ];
   return (
     <div>
@@ -633,7 +632,6 @@ function WorkflowView() {
       {tab==="gradient" && <GradientWorkflowView />}
       {tab==="newicon"  && <NewIconWorkflowView />}
       {tab==="typography" && <TypographyWorkflowView />}
-      {tab==="content"    && <ContentDSView />}
     </div>
   );
 }
