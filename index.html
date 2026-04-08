@@ -250,14 +250,129 @@ const SECTIONS_CDS = [
 ];
 
 const WORKFLOWS = [
-  { id:'covenant', title:'Covenant Push', desc:'Push dei design token dal plugin Covenant verso il repository GitHub.',
-    steps:['Apri Covenant in Figma','Seleziona le collezioni da esportare','Verifica il diff dei token modificati','Push verso il branch designato','Verifica la CI/CD pipeline su GitLab'] },
-  { id:'gradient', title:'Creazione Gradiente', desc:'Workflow per creare un gradiente agganciato al sistema di variabili.',
-    steps:['Crea un rettangolo in Figma','Applica gradient fill (linear o radial)','Aggancia i color stop alle variabili brand','Verifica il cambio automatico tra brand/mode','Registra il gradiente come style condiviso'] },
-  { id:'icon', title:'Nuova Icona', desc:'Aggiunta di una nuova icona alla libreria Orbit Icon Set.',
-    steps:['Prepara SVG ottimizzato (outline, 24x24)','Apri Arbiter nel file Orbit Icon Set','Registra la nuova icona via Arbiter','Verifica la detection nel switcher','Pubblica la libreria aggiornata'] },
-  { id:'typo', title:'Typography Pipeline', desc:'Pipeline completa per la tokenizzazione tipografica di un nuovo brand.',
-    steps:['Aggiungi font a global.typography.fontsName','Configura brand.fontMapping.title e paragraph','Popola PostScript names (bold, medium, regular)','Genera textStyle via catena 3 livelli','Verifica rendering in Figma con CovenantPluginV2','Esporta token e verifica output JSON'] },
+  { id:'covenant', icon:'\uD83D\uDE80', title:'Covenant Push', desc:'Linee guida operative per il push dei design token dal plugin Covenant verso il repository GitHub del Design System.',
+    steps:[
+      {title:'Apri Covenant in Figma', text:'Dal pannello plugin in Figma apri Covenant. Verifica che la GitHub Integration sia configurata \u2014 la prima volta appare "Not configured": clicca la freccia per autenticarti e collegare il repository.'},
+      {title:'Scegli l\'Export Source', text:'Dal dropdown Export Source seleziona il file JSON da esportare (es. orbittokens.json). Il pannello Preview mostra l\'anteprima in formato W3C Design Tokens \u2014 verificalo prima di procedere.'},
+      {title:'Compila il Commit Message', text:'Scegli il tipo dal dropdown, inserisci lo scope (brand o area token), scrivi una short description concisa. Formato: type(scope)!: short description'},
+      {title:'Controlla l\'Activity Timeline', text:'Prima del push verifica che non ci siano operazioni in corso. Se riporta "Waiting for activity..." puoi procedere senza conflitti.'},
+      {title:'Pull Request o Download JSON', text:'Pull Request \u2192 apre una PR su GitHub (raccomandato: permette revisione prima del merge). Download JSON \u2192 solo per testing locale, non modifica il repo remoto.'},
+    ],
+    tables:[
+      { title:'Tipi di commit', headers:['Type','Descrizione','Quando usarlo'], rows:[
+        ['add','Nuovi token','Aggiungi colori, spacing, nuovi componenti, nuovo brand'],
+        ['update','Modifica token esistenti','Cambio valore, rinomina, aggiornamento alias'],
+        ['remove','Rimozione token','Deprecazione, pulizia token inutilizzati'],
+        ['fix','Correzione errore','Alias rotto, valore hex sbagliato, tipo errato'],
+        ['refactor','Ristrutturazione','Riorganizzazione path, migrazione scala centesimale'],
+        ['sync','Sincronizzazione Figma \u2192 JSON','Allineamento variabili Figma al JSON'],
+      ]},
+      { title:'Convenzioni scope', headers:['Scope','Quando usarlo'], rows:[
+        ['orbit','Modifiche al core del Design System (token globali)'],
+        ['[brand-name]','Token specifici di un brand (es. lumina, mooney)'],
+        ['color','Palette e token colore'],
+        ['typography','Font, scale, weight'],
+        ['spacing','Spacing, radius, density'],
+        ['components','Token a livello di componente'],
+      ]},
+    ],
+    extras:[
+      {title:'Anatomia del commit', text:'type(scope)!: short description \u2014 type = categoria, scope = brand o area token, ! = breaking change, description = imperativo max 72 caratteri.'},
+      {title:'Esempi commit', code:'add(lumina): primary and secondary color tokens\nupdate(orbit): border-radius scale from 4 to 6px\nremove(typography): deprecated heading-xl-legacy token\nfix(lumina): correct primary hex value\nsync(orbit): align spacing variables from Figma to JSON\nrefactor(orbit)!: rename spacing scale - breaking change'},
+      {title:'\u26A0\uFE0F Breaking Change (!)', text:'Usare ESCLUSIVAMENTE quando il commit rompe quanto sviluppato fino ad ora. Casi concreti: rinomina di un token in produzione, rimozione di token esistente, cambio valore che altera visivamente componenti rilasciati, ristrutturazione schema che invalida alias o path. Se hai dubbi, non usarlo.'},
+    ]
+  },
+  { id:'gradient', icon:'\uD83C\uDFA8', title:'Creazione Gradiente', desc:'Workflow operativo per creare uno stile gradiente in Figma completamente agganciato al sistema di variabili/token del Design System. Il gradiente cambia automaticamente aspetto in base al brand (mode) selezionato.',
+    steps:[
+      {title:'Creare le variabili semantiche', text:'Apri il pannello Variables in Figma. Vai nella collection "semantic" (461 variabili). Nel gruppo brand \u2192 gradient, crea due nuove variabili di tipo colore: stopPositionStart (colore iniziale, stop 0%) e stopPositionEnd (colore finale, stop 100%). Assegna un valore diverso per ciascun mode/brand.'},
+      {title:'Creare il Color Style gradiente', text:'Crea un rettangolo sulla canvas. Nel pannello Fill, cambia da Solid a Linear Gradient. Configura i due stop: 0% collegato a brand/gradient/stopPositionStart, 100% a brand/gradient/stopPositionEnd. Apri il pannello Style e clicca + per creare "Gradient".'},
+      {title:'Verifica e utilizzo', text:'Lo stile "Gradient" appare nel pannello Color Styles. Aprendo "Edit color style", i due stop mostrano il collegamento alle variabili. Cambiando mode (es. da Pelican a Comersud), i colori si aggiornano automaticamente.'},
+    ],
+    tables:[
+      { title:'Mappatura variabili per brand', headers:['Variabile','Pelican','Comersud'], rows:[
+        ['stopPositionStart','brand/secondary/max','brand/secondary/max'],
+        ['stopPositionEnd','colors/aquaForest/50','brand/accent/main'],
+      ]},
+      { title:'Flusso completo nel Design System', headers:['Fase','Elemento','Descrizione'], rows:[
+        ['1','Order Palette','Valori HEX grezzi definiti per brand'],
+        ['2','Asset Palette','Categorie semantiche (colore, outline, mix, stile)'],
+        ['3','Semantic Variables','Variabili con valori per-mode (stopPositionStart, stopPositionEnd)'],
+        ['4','Color Style','Stile "Gradient" con stop collegati alle variabili'],
+        ['5','Componenti / Export','Applicazione ai componenti UI e generazione JSON per sviluppatori'],
+      ]},
+    ],
+    extras:[
+      {title:'Contesto architettura token', text:'Order Palette (HEX grezzi) \u2192 Asset Palette (categorie semantiche) \u2192 Semantic/Brand (variabili per-mode) \u2192 Color Styles (stili Figma collegati). Il gradiente si inserisce come Color Style che referenzia variabili semantic/brand.'},
+    ]
+  },
+  { id:'icon', icon:'\uD83D\uDDBC\uFE0F', title:'Nuova Icona', desc:'Workflow operativo per aggiungere una nuova icona brand-specifica che non e presente nel Brand Agnostico di partenza (Halo/Orbit).',
+    steps:[
+      {title:'Aggiungi l\'icona nel file brand', text:'Apri il file "*tuobrand* Icon Set" in Figma. Crea la nuova icona. Poi apri il file "Brand Agnostico Icon Set" e aggiungi l\'equivalente \u2014 stesso nome, ma va bene usare un placeholder come visual. Nota: specifica nella description del componente che si tratta di placeholder.'},
+      {title:'Aggiorna lo Switcher via Arbiter', text:'Apri il plugin Arbiter in Figma. Vai alla tab Orbit Actions. Seleziona il Component Set corretto. Aggiungi la nuova icona allo switcher. Attenzione: se le icone nuove erano gia state inserite tra gli switcher prima di eseguire Arbiter, il plugin non le intercettera.'},
+      {title:'Genera i token con Arbiter', text:'Arbiter crea automaticamente i token relativi nella collection HaloIcon. I token seguono la struttura gerarchica (es. illustrated.loyalty.rewards \u2192 illustrated_loyalty_rewards). Arbiter gestisce sia switcher che generazione token in un unico passaggio.'},
+    ],
+    tables:[
+      { title:'Token generati da Arbiter', headers:['Gruppo','Esempio token','Valore'], rows:[
+        ['illustrated','illustrated.loyalty.rewards','illustrated_loyalty_rewards'],
+        ['illustrated/loyalty/badge','illustrated.loyalty.badge.single','illustrated_loyalty_badge_single'],
+      ]},
+      { title:'Riepilogo flusso', headers:['Step','Azione','Tool'], rows:[
+        ['01','Crea icona nel file brand','Figma'],
+        ['01b','Aggiungi placeholder nel Brand Agnostico Icon Set','Figma'],
+        ['02','Aggiungi icona allo switcher','Arbiter (Orbit Actions)'],
+        ['03','Token generati automaticamente in HaloIcon','Arbiter'],
+      ]},
+    ],
+    extras:[]
+  },
+  { id:'typo', icon:'\uD83D\uDD24', title:'Typography Pipeline', desc:'Pipeline di generazione token tipografici: dal file Figma alla distribuzione di token semantici in CSS, SCSS e JSON per il Design System multi-brand.',
+    steps:[
+      {title:'Input: Order Forma + Asset Figma', text:'Il workflow riceve dati da due sorgenti parallele: Order Forma (modulo d\'ordine con dati brand, tier, specifiche) e Asset Figma (file con definizioni tipografiche). Si incontrano nel nodo FINAL_ACTION : FOLDER che identifica la cartella del brand.'},
+      {title:'Classificazione Proprieta', text:'Le proprieta grezze estratte da Figma vengono categorizzate: HEX (FontWeight.bold 700), Colore Secondari (FontFamily.primary), Outline (FontStyle normal), Mix (FontWeight.style), Other (Protocols by class), Root (FontStyle.all).'},
+      {title:'Mapping Semantico', text:'semantic.Brand.FontMapping aggrega le proprieta e le mappa su nomi semantici. semantic.Brand.DevMapping genera tre flussi paralleli: CSS custom properties (var(--font-*)), SCSS variables ($font-*), CSS classes (.font-*).'},
+      {title:'Struttura FontBlock', text:'semantic.Brand.FontBlock genera blocchi tipografici gerarchici. Ogni FontBlock ha 5 proprieta: fontFamily, fontWeight, fontSize, lineHeight, fontStyle. Gerarchia: Headlines.01 (H1), Headlines.02 (H2-H3), Body.01, Caption.01.'},
+      {title:'Output Finali', text:'Tre artefatti: (1) Valori Estratti con fontsize/DEF/System FontFont/files, (2) Preview UI Card in dark mode con rendering del token, (3) File JSON strutturato con tutti i FontBlock annidati, pronto per il consumo.'},
+      {title:'Integrazione Checklist', text:'Si collega alla Sezione 05 Tipografia dell\'onboarding. Prerequisiti: font heading e body definiti, licenza verificata, scala concordata, file Figma condiviso, tier confermato. Bronze: no pipeline. Silver: subset (Headlines+Body). Gold: pipeline completa.'},
+    ],
+    tables:[
+      { title:'Panoramica workflow', headers:['Elemento','Descrizione'], rows:[
+        ['Input','Asset Figma + Order Forma (richiesta onboarding)'],
+        ['Processo','Classificazione > Mapping semantico > FontBlock > Output multi-formato'],
+        ['Output','Token CSS / SCSS / JSON + Preview UI card + Codice strutturato'],
+        ['Formati','CSS custom properties, SCSS variables, JSON design tokens'],
+      ]},
+      { title:'Proprieta FontBlock', headers:['Proprieta','Token example','Descrizione'], rows:[
+        ['fontFamily','--headline-01-font-family','Famiglia font assegnata'],
+        ['fontWeight','--headline-01-font-weight','Peso (400, 600, 700...)'],
+        ['fontSize','--headline-01-font-size','Dimensione in rem/px'],
+        ['lineHeight','--headline-01-line-height','Altezza di riga'],
+        ['fontStyle','--headline-01-font-style','Stile (normal / italic)'],
+      ]},
+      { title:'Gerarchia FontBlock', headers:['Livello','FontBlock ID','Uso tipico'], rows:[
+        ['Headlines 01','semantic.Brand.FontBlock.Headlines.01','Titoli principali (H1)'],
+        ['Headlines 02','semantic.Brand.FontBlock.Headlines.02','Sottotitoli (H2-H3)'],
+        ['Body','semantic.Brand.FontBlock.Body.01','Testo corpo principale'],
+        ['Caption','semantic.Brand.FontBlock.Caption.01','Didascalie e testo piccolo'],
+      ]},
+      { title:'Naming Convention token', headers:['Pattern','Esempio'], rows:[
+        ['semantic.Brand.FontMapping','Aggregazione proprieta tipografiche grezze'],
+        ['semantic.Brand.DevMapping.{format}','semantic.Brand.DevMapping.Css / .Scss'],
+        ['semantic.Brand.FontBlock.{Type}.{N}','semantic.Brand.FontBlock.Headlines.01'],
+        ['...{Type}.{N}.{property}','semantic.Brand.FontBlock.Headlines.01.bold.fontFamily'],
+      ]},
+      { title:'Flusso End-to-End', headers:['Step','Fase','Dettaglio'], rows:[
+        ['1','Input','Order Forma + Asset Figma \u2192 FINAL_ACTION : FOLDER'],
+        ['2','Parsing','Estrazione proprieta grezze dal file Figma'],
+        ['3','Classifica','Categorizzazione per tipo: HEX, Colore, Outline, Mix, Other, Root'],
+        ['4','Mapping','semantic.Brand.FontMapping \u2192 semantic.Brand.DevMapping (CSS/SCSS)'],
+        ['5','FontBlock','Generazione blocchi gerarchici (Headlines, Body, Caption) x 5 proprieta'],
+        ['6','Output','Valori estratti + Preview UI Card + JSON strutturato'],
+      ]},
+    ],
+    extras:[
+      {title:'Note operative', text:'Prerequisiti: accesso file Figma con permessi lettura token, Order Forma compilato con tier confermato, struttura cartelle creata nel repo DS. Supporta esecuzione automatica via CI/CD. Ogni esecuzione genera versione immutabile con timestamp e hash commit.'},
+    ]
+  },
 ];
 
 const DEMO_BRANDS = [
@@ -843,26 +958,68 @@ function CDSView() {
 function WorkflowsView() {
   const [activeWf, setActiveWf] = useState('covenant');
   const wf = WORKFLOWS.find(w => w.id === activeWf);
+
+  function renderTable(table) {
+    return React.createElement("div", {className:"card", style:{marginBottom:12}},
+      React.createElement("div", {className:"card-header"}, React.createElement("h3", null, table.title)),
+      React.createElement("table", {className:"reg-table"},
+        React.createElement("thead", null,
+          React.createElement("tr", null, table.headers.map((h,i) => React.createElement("th", {key:i}, h)))
+        ),
+        React.createElement("tbody", null,
+          table.rows.map((row, i) =>
+            React.createElement("tr", {key:i},
+              row.map((cell, j) => React.createElement("td", {key:j, style:j===0?{fontWeight:500,fontFamily:'var(--mono)',fontSize:12}:{}}, cell))
+            )
+          )
+        )
+      )
+    );
+  }
+
   return (
-    React.createElement("div", {className:"page-content"},
+    React.createElement("div", {className:"page-content", style:{maxWidth:1020}},
       React.createElement("div", {className:"page-header"},
         React.createElement("h1", null, "Workflows"),
         React.createElement("p", null, "Procedure operative collegate al Brand System e al Design System Orbit.")
       ),
       React.createElement("div", {className:"tabs"},
         WORKFLOWS.map(w =>
-          React.createElement("div", {key:w.id, className:'tab' + (activeWf === w.id ? ' active' : ''), onClick:() => setActiveWf(w.id)}, w.title)
+          React.createElement("div", {key:w.id, className:'tab' + (activeWf === w.id ? ' active' : ''), onClick:() => setActiveWf(w.id)},
+            w.icon + ' ' + w.title
+          )
         )
       ),
-      wf && React.createElement("div", {className:"wf-card"},
-        React.createElement("h3", null, wf.title),
-        React.createElement("p", null, wf.desc),
-        React.createElement("div", {className:"wf-steps"},
-          wf.steps.map((step, i) =>
-            React.createElement("div", {key:i, className:"wf-step"},
-              React.createElement("div", {className:"wf-step-num"}, i + 1),
-              React.createElement("div", {className:"wf-step-text"}, step)
+      wf && React.createElement("div", null,
+        // Description
+        React.createElement("div", {className:"card", style:{marginBottom:16}},
+          React.createElement("p", {style:{fontSize:13.5,color:'var(--text2)',lineHeight:1.6}}, wf.desc)
+        ),
+        // Steps
+        React.createElement("div", {className:"card", style:{marginBottom:16}},
+          React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Procedura step-by-step")),
+          React.createElement("div", {className:"wf-steps"},
+            wf.steps.map((step, i) =>
+              React.createElement("div", {key:i, className:"wf-step"},
+                React.createElement("div", {className:"wf-step-num"}, String(i + 1).padStart(2, '0')),
+                React.createElement("div", {style:{flex:1}},
+                  React.createElement("div", {style:{fontSize:13.5,fontWeight:600,marginBottom:3}}, step.title),
+                  React.createElement("div", {className:"wf-step-text", style:{paddingTop:0}}, step.text)
+                )
+              )
             )
+          )
+        ),
+        // Tables
+        wf.tables && wf.tables.map((table, i) =>
+          React.createElement("div", {key:'t'+i}, renderTable(table))
+        ),
+        // Extras
+        wf.extras && wf.extras.length > 0 && wf.extras.map((extra, i) =>
+          React.createElement("div", {key:'e'+i, className:"card", style:{marginBottom:12}},
+            React.createElement("div", {className:"card-header"}, React.createElement("h3", null, extra.title)),
+            extra.text && React.createElement("p", {style:{fontSize:12.5,color:'var(--text2)',lineHeight:1.6}}, extra.text),
+            extra.code && React.createElement("pre", {style:{fontFamily:'var(--mono)',fontSize:11.5,color:'var(--text2)',background:'var(--surface2)',padding:14,borderRadius:'var(--radius-sm)',lineHeight:1.6,whiteSpace:'pre-wrap',marginTop:8}}, extra.code)
           )
         )
       )
