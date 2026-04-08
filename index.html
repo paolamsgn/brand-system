@@ -535,6 +535,311 @@ function ChecklistView({ brandState, setBrandState }) {
   );
 }
 
+function CDSView() {
+  const CDS_GUIDELINES = {
+    '11': {
+      title: 'UX Writing e Microcopy',
+      overview: 'Come il brand scrive i testi dell\'interfaccia: ogni label, ogni CTA, ogni messaggio.',
+      orbitLink: 'brand.textStyle.*',
+      orbitDesc: 'I text style determinano la gerarchia del contenuto e lo spazio disponibile per il copy. Lunghezze max label/CTA dipendono dalle font metrics per brand.',
+      guidelines: [
+        { title:'Labels', text:'Usa sostantivi o frasi nominali brevi. Evita verbi all\'imperativo nelle label statiche. Preferisci "Indirizzo email" a "Inserisci il tuo indirizzo email".' },
+        { title:'CTA', text:'Il testo deve descrivere l\'azione + l\'oggetto. "Salva modifiche" > "Salva". "Crea account gratuito" > "Registrati".' },
+        { title:'Errori', text:'Formula in 3 parti: (1) Cosa e andato storto, (2) Perche e successo, (3) Come risolvere.' },
+        { title:'Empty states', text:'Mai un\'area vuota senza spiegazione. Struttura: headline motivazionale + contesto + CTA primaria.' },
+      ],
+      dosDonts: [
+        { good:'Il numero di carta non e valido. Controlla le 16 cifre sul fronte della tua carta.', bad:'Errore. Riprova.' },
+        { good:'Indirizzo email', bad:'Inserisci il tuo indirizzo email' },
+      ]
+    },
+    '12': {
+      title: 'Tono e Voce Espanso',
+      overview: 'Espansione della sezione 06 base. Definisce la personalita del brand attraverso la scrittura in ogni contesto e canale.',
+      orbitLink: 'brand.fontMapping.title/paragraph',
+      orbitDesc: 'Font geometrici (Gotham) = tono tecnico/moderno. Font umanisti (General Sans) = tono caldo/accessibile. La matrice tono deve essere coerente con la scelta tipografica.',
+      toneMatrix: [
+        { context:'Informativo', tone:'Neutro, chiaro', char:'Fatti prima, spiegazioni dopo' },
+        { context:'Celebrativo', tone:'Caldo, entusiasta', char:'Energia contenuta, mai esagerata' },
+        { context:'Critico (errori)', tone:'Empatico, fattuale', char:'Mai colpevolizzante, orientato alla soluzione' },
+        { context:'Urgente', tone:'Diretto, rassicurante', char:'Urgenza senza allarmismo' },
+      ],
+      voiceTemplate:'Aggettivo: [es. Diretto]\nSignifica: Andiamo al punto, senza giri di parole.\nNON significa: Brusco o scortese.\nEsempio si: "Il pagamento e andato a buon fine."\nEsempio no: "La transazione e stata elaborata con successo dal sistema."'
+    },
+    '13': {
+      title: 'Editorial e Content Types',
+      overview: 'Regole per strutturare e scrivere i contenuti in ogni formato.',
+      orbitLink: 'semantic.brand.textStyle.headLine/body/caption',
+      orbitDesc: 'Ogni content type mappa su un text style Orbit. La mappa va compilata per brand perche i font hanno resa visiva diversa.',
+      contentMap: [
+        { type:'Titolo pagina principale', style:'brand.textStyle.headLine.01', use:'H1 - una sola occorrenza per pagina' },
+        { type:'Titolo sezione', style:'brand.textStyle.headLine.02', use:'H2 - sezioni principali' },
+        { type:'Label importante / sottotitolo', style:'brand.textStyle.body1.bold', use:'Emphasis, sottotitoli card' },
+        { type:'Corpo testo', style:'brand.textStyle.body1.regular', use:'Testo principale di lettura' },
+        { type:'Testo secondario', style:'brand.textStyle.body2.regular', use:'Descrizioni, helper text' },
+        { type:'Metadata, timestamp', style:'brand.textStyle.caption.regular', use:'Info secondarie, date, tag' },
+      ],
+      typoRules: [
+        { el:'Titolo pagina (H1)', fmt:'Sentence case, niente punto', ex:'Gestisci il tuo profilo' },
+        { el:'Heading sezione (H2-H3)', fmt:'Sentence case', ex:'Impostazioni di sicurezza' },
+        { el:'CTA button', fmt:'Title case o sentence case (scegli uno)', ex:'Crea account' },
+        { el:'Numeri', fmt:'Formato locale IT', ex:'EUR 1.290,50' },
+        { el:'Date', fmt:'GG mese AAAA', ex:'12 marzo 2026' },
+      ]
+    },
+    '14': {
+      title: 'Naming e Terminologia',
+      overview: 'Il glossario ufficiale del brand: cosa si chiama come, cosa non si dice mai.',
+      orbitLink: 'Naming conventions Orbit',
+      orbitDesc: 'Convenzioni: has* per booleani, camelCase, subtle (non muted), instance swap. Glossario deve includere termini standard Orbit.',
+      orbitTerms: [
+        { term:'primary / secondary / accent', ctx:'Colori brand', note:'Usare nella documentazione, mai "colore 1/2/3"' },
+        { term:'container / surface', ctx:'Background', note:'container = area delimitata, surface = sfondo ampio' },
+        { term:'subtle', ctx:'Varianti attenuate', note:'Mai "muted" - il termine corretto e "subtle"' },
+        { term:'has*', ctx:'Booleani componenti', note:'Nella UI: "con icona" / "senza icona", mai "mostra icona"' },
+        { term:'headLine / body / caption', ctx:'Text style', note:'Usare nella mappa content type (sez 13)' },
+      ],
+      bannedTerms: [
+        { term:'Errore fatale', problem:'Allarmista, poco chiaro', alt:'Non e stato possibile completare l\'azione' },
+        { term:'Clicca qui', problem:'Non accessibile, vago', alt:'Descrivere l\'azione: Vai alle impostazioni' },
+        { term:'Utente finale', problem:'Desueto, distante', alt:'Persona o il nome specifico del ruolo' },
+      ]
+    }
+  };
+
+  const [activeSection, setActiveSection] = useState('11');
+  const sec = CDS_GUIDELINES[activeSection];
+
+  const tierTable = React.createElement("div", {className:"card", style:{marginBottom:20}},
+    React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Mappa Tier x Moduli CDS")),
+    React.createElement("table", {className:"reg-table"},
+      React.createElement("thead", null,
+        React.createElement("tr", null,
+          React.createElement("th", null, "Modulo"),
+          React.createElement("th", null, "\uD83E\uDD47 Gold"),
+          React.createElement("th", null, "\uD83E\uDD48 Silver"),
+          React.createElement("th", null, "\uD83E\uDD49 Bronze")
+        )
+      ),
+      React.createElement("tbody", null,
+        [['11 - UX Writing (8pt)','\u2705 Completo','\u2705 Completo','\u2796 Non richiesto'],
+         ['12 - Tono e Voce (5pt)','\u2705 Completo','\u2705 Completo','\u2705 Base (2pt)'],
+         ['13 - Editorial (6pt)','\u2705 Completo','\u2B1C Opzionale','\u2796 Non richiesto'],
+         ['14 - Naming (5pt)','\u2705 Completo','\u2705 Completo','\u2705 Base (2pt)'],
+         ['Totale CDS per tier','24 pt','18 pt','4 pt'],
+        ].map((row, i) =>
+          React.createElement("tr", {key:i, style:i===4?{fontWeight:600}:{}},
+            row.map((cell, j) => React.createElement("td", {key:j}, cell))
+          )
+        )
+      )
+    )
+  );
+
+  function renderSection() {
+    const els = [];
+
+    // Overview + Orbit link
+    els.push(React.createElement("div", {key:'ov', className:"card", style:{marginBottom:16}},
+      React.createElement("p", {style:{fontSize:13.5,color:'var(--text2)',lineHeight:1.6,marginBottom:12}}, sec.overview),
+      React.createElement("div", {className:"section-orbit-info"},
+        '\u26A1 Orbit: ', React.createElement("code", null, sec.orbitLink), ' \u2014 ', sec.orbitDesc
+      )
+    ));
+
+    // Section 11 specifics
+    if (activeSection === '11') {
+      els.push(React.createElement("div", {key:'gl', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Linee guida operative")),
+        sec.guidelines.map((g, i) =>
+          React.createElement("div", {key:i, style:{marginBottom:14}},
+            React.createElement("div", {style:{fontSize:13,fontWeight:600,marginBottom:3}}, g.title),
+            React.createElement("div", {style:{fontSize:12.5,color:'var(--text2)',lineHeight:1.5}}, g.text)
+          )
+        )
+      ));
+      els.push(React.createElement("div", {key:'dd', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Do's e Don'ts")),
+        sec.dosDonts.map((d, i) =>
+          React.createElement("div", {key:i, style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}},
+            React.createElement("div", {style:{background:'var(--green-dim)',padding:'10px 14px',borderRadius:'var(--radius-sm)',fontSize:12.5,lineHeight:1.5}},
+              React.createElement("span", {style:{color:'var(--green)',fontWeight:600,fontSize:11,display:'block',marginBottom:3}}, '\u2705 Bene'),
+              d.good
+            ),
+            React.createElement("div", {style:{background:'var(--red-dim)',padding:'10px 14px',borderRadius:'var(--radius-sm)',fontSize:12.5,lineHeight:1.5}},
+              React.createElement("span", {style:{color:'var(--red)',fontWeight:600,fontSize:11,display:'block',marginBottom:3}}, '\u274C Male'),
+              d.bad
+            )
+          )
+        )
+      ));
+    }
+
+    // Section 12 specifics
+    if (activeSection === '12') {
+      els.push(React.createElement("div", {key:'tm', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Matrice Tono x Contesto")),
+        React.createElement("table", {className:"reg-table"},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Contesto"),
+              React.createElement("th", null, "Tono"),
+              React.createElement("th", null, "Caratteristica")
+            )
+          ),
+          React.createElement("tbody", null,
+            sec.toneMatrix.map((t, i) =>
+              React.createElement("tr", {key:i},
+                React.createElement("td", {style:{fontWeight:500}}, t.context),
+                React.createElement("td", null, t.tone),
+                React.createElement("td", {style:{color:'var(--text2)'}}, t.char)
+              )
+            )
+          )
+        )
+      ));
+      els.push(React.createElement("div", {key:'vt', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Template: Brand Voice Pillars")),
+        React.createElement("pre", {style:{fontFamily:'var(--mono)',fontSize:11.5,color:'var(--text2)',background:'var(--surface2)',padding:14,borderRadius:'var(--radius-sm)',lineHeight:1.6,whiteSpace:'pre-wrap'}}, sec.voiceTemplate)
+      ));
+    }
+
+    // Section 13 specifics
+    if (activeSection === '13') {
+      els.push(React.createElement("div", {key:'cm', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Mappa Content Type \u2192 Text Style Orbit")),
+        React.createElement("table", {className:"reg-table"},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Content Type"),
+              React.createElement("th", null, "Text Style Orbit"),
+              React.createElement("th", null, "Uso")
+            )
+          ),
+          React.createElement("tbody", null,
+            sec.contentMap.map((c, i) =>
+              React.createElement("tr", {key:i},
+                React.createElement("td", {style:{fontWeight:500}}, c.type),
+                React.createElement("td", null, React.createElement("code", {style:{fontFamily:'var(--mono)',fontSize:11,background:'var(--surface3)',padding:'1px 5px',borderRadius:3}}, c.style)),
+                React.createElement("td", {style:{color:'var(--text2)'}}, c.use)
+              )
+            )
+          )
+        )
+      ));
+      els.push(React.createElement("div", {key:'tr', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Regole tipografiche rapide")),
+        React.createElement("table", {className:"reg-table"},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Elemento"),
+              React.createElement("th", null, "Formato"),
+              React.createElement("th", null, "Esempio")
+            )
+          ),
+          React.createElement("tbody", null,
+            sec.typoRules.map((r, i) =>
+              React.createElement("tr", {key:i},
+                React.createElement("td", {style:{fontWeight:500}}, r.el),
+                React.createElement("td", null, r.fmt),
+                React.createElement("td", {style:{color:'var(--text2)',fontStyle:'italic'}}, r.ex)
+              )
+            )
+          )
+        )
+      ));
+    }
+
+    // Section 14 specifics
+    if (activeSection === '14') {
+      els.push(React.createElement("div", {key:'ot', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Termini Orbit da includere nel glossario")),
+        React.createElement("table", {className:"reg-table"},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Termine Orbit"),
+              React.createElement("th", null, "Contesto"),
+              React.createElement("th", null, "Note per il CDS")
+            )
+          ),
+          React.createElement("tbody", null,
+            sec.orbitTerms.map((t, i) =>
+              React.createElement("tr", {key:i},
+                React.createElement("td", null, React.createElement("code", {style:{fontFamily:'var(--mono)',fontSize:11,background:'var(--surface3)',padding:'1px 5px',borderRadius:3}}, t.term)),
+                React.createElement("td", null, t.ctx),
+                React.createElement("td", {style:{color:'var(--text2)'}}, t.note)
+              )
+            )
+          )
+        )
+      ));
+      els.push(React.createElement("div", {key:'bt', className:"card", style:{marginBottom:16}},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Banned Terms")),
+        React.createElement("table", {className:"reg-table"},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Termine vietato"),
+              React.createElement("th", null, "Problema"),
+              React.createElement("th", null, "Alternativa")
+            )
+          ),
+          React.createElement("tbody", null,
+            sec.bannedTerms.map((b, i) =>
+              React.createElement("tr", {key:i},
+                React.createElement("td", {style:{color:'var(--red)',fontWeight:500}}, b.term),
+                React.createElement("td", {style:{color:'var(--text2)'}}, b.problem),
+                React.createElement("td", {style:{color:'var(--green)'}}, b.alt)
+              )
+            )
+          )
+        )
+      ));
+    }
+
+    // Checkpoint list
+    const sectionData = SECTIONS_CDS.find(s => s.id === activeSection);
+    if (sectionData) {
+      els.push(React.createElement("div", {key:'cp', className:"card"},
+        React.createElement("div", {className:"card-header"}, React.createElement("h3", null, "Checkpoint (" + sectionData.items.length + " pt)")),
+        sectionData.items.map((item, i) =>
+          React.createElement("div", {key:i, style:{display:'flex',gap:10,padding:'6px 0',fontSize:13,color:'var(--text2)'}},
+            React.createElement("span", {style:{fontFamily:'var(--mono)',fontSize:11,color:'var(--text3)',minWidth:32}}, activeSection + '.' + (i+1)),
+            item
+          )
+        )
+      ));
+    }
+
+    return els;
+  }
+
+  return (
+    React.createElement("div", {className:"page-content"},
+      React.createElement("div", {className:"page-header"},
+        React.createElement("h1", null, "\u270D\uFE0F Content Design System"),
+        React.createElement("p", null, "Layer linguistico del Brand System. Definisce come ogni brand comunica nei testi di interfaccia, nel tono, nella struttura dei contenuti e nella terminologia.")
+      ),
+      React.createElement("div", {className:"orbit-banner"},
+        React.createElement("div", {className:"ob-icon"}, '\u26A1'),
+        React.createElement("div", {className:"ob-text"},
+          React.createElement("div", {className:"ob-title"}, "Collegato a Orbit Design System"),
+          React.createElement("div", {className:"ob-desc"}, "Catena tipografica 3 livelli: global \u2192 fontMapping \u2192 textStyle. Ogni modulo CDS mappa su token Orbit specifici.")
+        )
+      ),
+      tierTable,
+      React.createElement("div", {className:"tabs"},
+        ['11','12','13','14'].map(id => {
+          const s = CDS_GUIDELINES[id];
+          return React.createElement("div", {key:id, className:'tab' + (activeSection === id ? ' active' : ''), onClick:() => setActiveSection(id)},
+            id + ' \u00B7 ' + s.title
+          );
+        })
+      ),
+      renderSection()
+    )
+  );
+}
+
 function WorkflowsView() {
   const [activeWf, setActiveWf] = useState('covenant');
   const wf = WORKFLOWS.find(w => w.id === activeWf);
@@ -613,14 +918,14 @@ function RegistryView() {
 function App() {
   const [page, setPage] = useState(() => {
     const h = window.location.hash.replace('#','');
-    return ['dashboard','checklist','workflows','registry'].includes(h) ? h : 'dashboard';
+    return ['dashboard','checklist','cds','workflows','registry'].includes(h) ? h : 'dashboard';
   });
   const [brandState, setBrandState] = useState(makeBrandState);
 
   useEffect(() => {
     const onHash = () => {
       const h = window.location.hash.replace('#','');
-      if (['dashboard','checklist','workflows','registry'].includes(h)) setPage(h);
+      if (['dashboard','checklist','cds','workflows','registry'].includes(h)) setPage(h);
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
@@ -640,6 +945,7 @@ function App() {
     ]},
     { section: 'Brand', items: [
       { id:'checklist', icon:'\u2611', label:'Checklist', badge:prog.totalPct + '%' },
+      { id:'cds', icon:'\u270D', label:'Content Design System' },
       { id:'workflows', icon:'\u25C7', label:'Workflows', badge:WORKFLOWS.length },
     ]},
   ];
@@ -676,6 +982,7 @@ function App() {
           React.createElement("span", {className:"topbar-sub"},
             page === 'dashboard' ? 'Dashboard' :
             page === 'checklist' ? 'Checklist' :
+            page === 'cds' ? 'Content Design System' :
             page === 'workflows' ? 'Workflows' : 'Registro'
           ),
           React.createElement("div", {className:"topbar-right"},
@@ -685,6 +992,7 @@ function App() {
         ),
         page === 'dashboard' && React.createElement(DashboardView, null),
         page === 'checklist' && React.createElement(ChecklistView, {brandState, setBrandState}),
+        page === 'cds' && React.createElement(CDSView, null),
         page === 'workflows' && React.createElement(WorkflowsView, null),
         page === 'registry' && React.createElement(RegistryView, null)
       )
