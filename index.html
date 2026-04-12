@@ -189,7 +189,6 @@ function App() {
   };
 
   const [routeState, setRouteState] = useState(parseHash);
-  const [sideOpen, setSideOpen]     = useState(false);
   const view     = routeState.view;
   const activeId = routeState.activeId;
 
@@ -201,7 +200,7 @@ function App() {
   }, []);
 
   // Navigate: update hash (which triggers hashchange → state update)
-  const navigate = (hash) => { window.location.hash = hash; setSideOpen(false); };
+  const navigate = (hash) => { window.location.hash = hash; };
 
   const active = brands.find(b => b.id === activeId) || null;
 
@@ -238,7 +237,7 @@ function App() {
       <style>{css}</style>
 
       {/* ── SIDEBAR ── */}
-      <aside style={s.sidebar} className={sideOpen ? "sidebar sidebar-open" : "sidebar"}>
+      <aside style={s.sidebar}>
         {/* Logo */}
         <div style={s.sideTop}>
           <div style={s.brand}>
@@ -290,11 +289,6 @@ function App() {
         {/* Top bar */}
         <header style={s.topbar}>
           <div style={s.topbarLeft}>
-            <button onClick={()=>setSideOpen(o=>!o)} style={{display:"none",background:"none",border:"none",
-              color:"#c0cad6",cursor:"pointer",padding:"6px 8px",borderRadius:6,
-              fontSize:20,lineHeight:1,flexShrink:0}} className="hamburger">
-              {sideOpen ? "✕" : "☰"}
-            </button>
             <span style={s.topbarTitle}>
               {view==="new"       && "Nuovo brand"}
               {view==="registry"  && "Registro brand"}
@@ -345,14 +339,7 @@ function App() {
         </div>
       </div>
 
-      {/* Mobile sidebar backdrop */}
-      {sideOpen && (
-        <div onClick={()=>setSideOpen(false)}
-          style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:19,display:"none"}}
-          className="sidebar-backdrop" />
-      )}
-
-      {/* Delete modal */}}
+      {/* Delete modal */}
       {confirmDel && (
         <Overlay onClose={()=>setConfirmDel(null)}>
           <div style={s.modalTitle}>Eliminare questo brand?</div>
@@ -2446,27 +2433,6 @@ const css = `
   input::placeholder { color: #64748b; }
   input:focus { border-color: rgba(167,139,250,0.5) !important; outline: none; }
 
-  /* ── Mobile responsive ─────────────────────────────────────────────── */
-  @media (max-width: 768px) {
-    .hamburger { display: flex !important; align-items: center; justify-content: center; }
-    .sidebar-backdrop { display: block !important; }
-
-    /* Sidebar hidden off-screen by default on mobile */
-    .sidebar {
-      position: fixed !important;
-      left: -260px;
-      top: 0;
-      z-index: 20;
-      height: 100vh !important;
-      transition: left .25s ease;
-      box-shadow: none;
-    }
-    /* Sidebar visible when open */
-    .sidebar.sidebar-open {
-      left: 0;
-      box-shadow: 4px 0 40px rgba(0,0,0,0.7);
-    }
-  }
 
   /* Commit type cards */
   .type-card { transition: all .15s; cursor: pointer; }
