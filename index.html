@@ -392,6 +392,144 @@ const DEMO_BRANDS = [
   { name:'Lumina', emoji:'sparkles', tier:'gold', status:'active', bs:100, cds:100, orbit:true },
 ];
 
+// m=MooneyGo, c=Comersud: 1=ok, 0=missing, string=partial
+// s=status: ok|missing|renamed|issue|dupe
+const ICONS_BASIC = [
+  {t:'basic_arrow_direction',m:0,c:0,issue:'Su MooneyGo e Comersud distinte tra direction sx, dx, both. Su Orbit: basic/arrow/directionSx...',fe:'Eliminata dall\'app, non viene piu usata',s:'issue'},
+  {t:'basic_transport_discobus',m:1,c:1,issue:'MooneyGo aveva doppione di multi_bus. Su Orbit soppresse le doppie, lasciata solo radiobus.',fe:'Aggiunta service discovery "discobus" per client roger',s:'ok'},
+  {t:'basic_transport_museum',m:0,c:0,issue:'Orbit ha cluster "experience/museum"',fe:'Forse da aggiungere a basic/experience?',s:'missing'},
+  {t:'basic_transport_routeLine',m:1,c:1,issue:'Su MooneyGo e Comersud: basic/transport/line',fe:'OK',s:'renamed'},
+  {t:'basic_general_accessibility',m:1,c:1,issue:'Orbit ha "experience/services/accessibility" e "accessibility/..." con diverse icone.',fe:'Sembra basic/accessibility/movement',s:'renamed'},
+  {t:'basic_general_cardCredit',m:1,c:1,issue:'Su Orbit sotto cluster "payments" non "general"',fe:'OK',s:'renamed'},
+  {t:'basic_general_cardRejected',m:1,c:1,issue:'Su Orbit: Basic/payments/card_rejected',fe:'',s:'renamed'},
+  {t:'basic_general_cardTransfer',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'MOMO-11812 ATM',s:'missing'},
+  {t:'basic_general_cart',m:1,c:1,issue:'Su Orbit sotto cluster "payments"',fe:'',s:'renamed'},
+  {t:'basic_general_cartOff',m:1,c:1,issue:'Su cluster "payments": Basic/payments/cart_off. Orbit: basic/payments/cartOff',fe:'OK',s:'renamed'},
+  {t:'basic_general_cash',m:1,c:1,issue:'Su Orbit sotto cluster "payments"',fe:'OK',s:'renamed'},
+  {t:'basic_general_euro',m:1,c:1,issue:'Su cluster "payments"',fe:'OK',s:'renamed'},
+  {t:'basic_general_wallet',m:1,c:1,issue:'Su cluster "payments"',fe:'OK',s:'renamed'},
+  {t:'basic_general_nfcOn',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'Eliminata dall\'app, non viene piu usata',s:'missing'},
+  {t:'basic_general_card_transfer',m:0,c:0,issue:'Non trovo possibili equivalenze! Doppione?',fe:'Doppione',s:'dupe'},
+  {t:'basic_general_fast',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'MOMO-11564 ATM',s:'missing'},
+  {t:'basic_general_multi_skipass',m:0,c:0,issue:'Abbiamo solo il singolo skipass: basic/general/skipass',fe:'',s:'missing'},
+  {t:'basic_general_rewards',m:0,c:1,issue:'DIMENTICATA DI AGGIUNGERLA SU ORBIT!!!',fe:'FATTO ma chiamata "REWARD"',s:'issue'},
+  {t:'basic_feedback_checkCircle',m:1,c:1,issue:'Diversi check circle: outline, fill, empty...',fe:'Penso sia basic/feedback/checkCircleOutline',s:'renamed'},
+  {t:'basic_feedback_negative',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'basic_feedback_check_circle',m:1,c:1,issue:'Diversi check circle. Doppione?',fe:'Doppione',s:'dupe'},
+  {t:'basic_favorites_empty',m:1,c:1,issue:'Stesso nome: basic/favorites/empty',fe:'OK',s:'ok'},
+  {t:'basic_favorites_full',m:1,c:1,issue:'Stesso nome: basic/favorites/full',fe:'OK',s:'ok'},
+  {t:'basic_map_geoIos',m:1,c:1,issue:'Su Orbit spostate su Illustrated: illustrated/positionIos',fe:'',s:'renamed'},
+  {t:'basic_map_selectedGeoIos',m:1,c:1,issue:'Forse equivale a basic/map/position/iosFill',fe:'',s:'issue'},
+  {t:'basic_map_noGeoIos',m:1,c:1,issue:'Su Orbit: basic/map/position/ios (da gestire con colore)',fe:'',s:'issue'},
+  {t:'basic_map_positionCoarseAndroid',m:0,c:0,issue:'',fe:'',s:'missing'},
+  {t:'basic_map_positionCoarseIos',m:0,c:0,issue:'',fe:'',s:'missing'},
+  {t:'basic_map_positionSelectedIos',m:1,c:1,issue:'Forse Colored/selected_ios-NEW',fe:'',s:'issue'},
+  {t:'basic_arrow_saving',m:0,c:0,issue:'Non trovo possibili equivalenze! Forse Basic/payments/saving?',fe:'',s:'missing'},
+  {t:'basic_experience_theatre',m:1,c:1,issue:'Stesso nome: basic/experience/teatro',fe:'OK',s:'ok'},
+  {t:'basic_users_circle',m:1,c:1,issue:'Stesso nome: basic/user/circle',fe:'OK',s:'ok'},
+  {t:'basic_users_user',m:1,c:1,issue:'Stesso nome: basic/user/user',fe:'OK',s:'ok'},
+  {t:'basic_nav_tab_grid',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'TODO: aggiungere nel set standard per nav tab ATM',s:'missing'},
+  {t:'basic_nav_tab_pin',m:1,c:1,issue:'Versione distinta: pin empty e pin filled',fe:'Come sopra',s:'renamed'},
+  {t:'basic_nav_tab_shopping',m:0,c:0,issue:'Non trovo possibili equivalenze! Forse carrello per altri brand?',fe:'Come sopra',s:'missing'},
+  {t:'basic_nav_tab_infomobilita',m:0,c:0,issue:'Su Illustrated: illustrated/transport/infoMobility',fe:'Come sopra',s:'missing'},
+];
+
+const ICONS_ILLUSTRATED = [
+  {t:'illustrated_general_subscription_calendar',m:0,c:0,issue:'Forse illustrated/transport/parkBooking? Sembra illustrated/general/calendar',fe:'',s:'missing'},
+  {t:'illustrated_transport_parking_search',m:1,c:1,issue:'Su Orbit: illustrated/transport/search',fe:'OK',s:'renamed'},
+  {t:'illustrated_transport_trailer',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustrated_general_regulations',m:1,c:1,issue:'Illustrated/general/regulation',fe:'OK',s:'ok'},
+  {t:'illustrated_general_traffic_ticket',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustrated_favorites_colored',m:1,c:1,issue:'Idem Orbit: colored/favorite',fe:'OK',s:'ok'},
+  {t:'illustrated_users_default',m:1,c:1,issue:'Idem Orbit: illustrated/user/default',fe:'OK',s:'ok'},
+  {t:'illustrated_users_delete',m:1,c:1,issue:'Idem su Orbit',fe:'OK',s:'ok'},
+  {t:'illustrated_users_man',m:1,c:1,issue:'Idem su Orbit',fe:'OK',s:'ok'},
+  {t:'illustrated_users_woman',m:1,c:0,issue:'Idem su Orbit',fe:'OK',s:'ok'},
+  {t:'illustrated_general_event',m:1,c:1,issue:'SU ORBIT INSERITA COME MISSING!!!',fe:'',s:'issue'},
+  {t:'illustrated_map_position_ios_on',m:1,c:1,issue:'Su orbit: illustrated/positionIos. Colored su MG/CS.',fe:'',s:'renamed'},
+  {t:'illustrated_map_position_ios_off',m:1,c:1,issue:'Icona basic rossa, su Orbit basic/map/position/ios',fe:'',s:'issue'},
+  {t:'illustrated_map_position_ios_centered',m:0,c:0,issue:'Forse basic/map/positionPrecise/ios?',fe:'',s:'missing'},
+  {t:'illustrated_map_position_android_on',m:1,c:1,issue:'Su Orbit tra le basic: basic/map/position/android',fe:'',s:'renamed'},
+  {t:'illustrated_map_position_android_off',m:0,c:0,issue:'Forse basic/map/position/androidError',fe:'',s:'missing'},
+  {t:'illustrated_map_position_android_centered',m:0,c:0,issue:'Forse basic/map/positionPrecise/ios?',fe:'',s:'missing'},
+  {t:'illustrated_general_skipass',m:1,c:1,issue:'Sono nel cluster "transport", non General',fe:'',s:'renamed'},
+  {t:'illustrated_seat_gt_available',m:1,c:1,issue:'Diverse tipologie seats, spostate da colored a illustrated',fe:'',s:'renamed'},
+  {t:'illustrated_seat_gt_disabled',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_gt_selected',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_top_available',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_top_disabled',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_top_selected',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_train_available',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_train_disabled',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_seat_train_selected',m:1,c:1,issue:'Idem come sopra',fe:'',s:'renamed'},
+  {t:'illustrated_users_cloud',m:1,c:1,issue:'Su Orbit Illustrated/general',fe:'',s:'renamed'},
+  {t:'illustrated_media_phone_call',m:1,c:1,issue:'Idem su Orbit',fe:'',s:'ok'},
+  {t:'illustrated_media_twitter',m:1,c:1,issue:'Spostata su Basic perche monocolor',fe:'',s:'renamed'},
+  {t:'illustrated_payment_car_tax',m:1,c:1,issue:'Bollo auto. Idem su Orbit.',fe:'',s:'ok'},
+  {t:'illustrated_payment_pago_pa',m:1,c:1,issue:'Su Orbit messo su Colored (logo): colored/pagamenti/pagoPa',fe:'',s:'renamed'},
+  {t:'illustrated_bollettini',m:1,c:1,issue:'Idem su Orbit.',fe:'',s:'ok'},
+  {t:'illustrated_loyalty_starter_pilot',m:0,c:1,issue:'Icone specifiche Comersud, non riportate su MooneyGo. Su Orbit ci sono.',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_co_pilot',m:0,c:1,issue:'Icone specifiche Comersud.',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_pro_pilot',m:0,c:1,issue:'Icone specifiche Comersud.',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_master_pilot',m:0,c:1,issue:'Icone specifiche Comersud.',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_number5',m:0,c:0,issue:'Prime esplorazioni, soppresse',fe:'',s:'dupe'},
+  {t:'illustrated_loyalty_number4',m:0,c:0,issue:'Prime esplorazioni, soppresse',fe:'',s:'dupe'},
+  {t:'illustrated_loyalty_number3',m:0,c:0,issue:'Prime esplorazioni, soppresse',fe:'',s:'dupe'},
+  {t:'illustrated_loyalty_number2',m:0,c:0,issue:'Prime esplorazioni, soppresse',fe:'',s:'dupe'},
+  {t:'illustrated_loyalty_number1',m:0,c:0,issue:'Prime esplorazioni, soppresse',fe:'',s:'dupe'},
+  {t:'illustrated_loyalty_badgeV2',m:0,c:1,issue:'illustrated/loyalty/badge/single',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_badge_multipleV2',m:0,c:1,issue:'illustrated/loyalty/badge/multiple',fe:'',s:'issue'},
+  {t:'illustrated_loyalty_rewardsV2',m:0,c:1,issue:'illustrated/loyalty/rewards',fe:'',s:'issue'},
+  {t:'illustrated_general_experience',m:1,c:1,issue:'Su Orbit messa in section "Missing"!!!',fe:'',s:'issue'},
+  {t:'illustrated_media_ticket_qrcode',m:1,c:1,issue:'Su Orbit: illustrated/media/qrcodeBlue e qrcodeWhite',fe:'',s:'renamed'},
+  {t:'illustrated_gesture_zoom_in',m:1,c:1,issue:'Idem. Anche versioni out e up.',fe:'',s:'ok'},
+  {t:'illustrated_general_ticket_z301',m:0,c:0,issue:'Diverse icone ticket: user, default, operation, calendar, qrcode, autoticketing.',fe:'',s:'missing'},
+];
+
+const ICONS_COLORED = [
+  {t:'colored_brand_pictogram',m:1,c:1,issue:'Basic',fe:'',s:'ok'},
+  {t:'colored_brand_pictogram_disabled',m:0,c:0,issue:'Missing',fe:'',s:'missing'},
+  {t:'colored_brand_pictogram_stroke',m:1,c:1,issue:'Basic',fe:'',s:'ok'},
+];
+
+const ILLUSTRATIONS = [
+  {t:'illustration_general_not_active',m:1,c:1,issue:'Su Orbit: illustration/general/emptyState. Su Comersud il visual si chiama "NOT ACTIVE".',fe:'Possibile disambiguazione naming in app',s:'renamed'},
+  {t:'illustration_general_map',m:1,c:1,issue:'MISSING!!! Su MG/CS: Illustration/extra/maps',fe:'',s:'issue'},
+  {t:'illustration_general_ticket_omaggio',m:0,c:0,issue:'Forse Illustration/extra/ticket-MGM?',fe:'Flusso ATM, da verificare',s:'missing'},
+  {t:'illustration_general_error_ticket_omaggio',m:0,c:0,issue:'Missing',fe:'Flusso ATM, da verificare',s:'missing'},
+  {t:'illustration_general_alternative_positive',m:0,c:0,issue:'Missing',fe:'Flusso ATM, da verificare',s:'missing'},
+  {t:'illustration_general_list',m:1,c:1,issue:'Su Orbit: illustration/general/pdvRegistration e illustration/extra/list',fe:'',s:'renamed'},
+  {t:'illustration_extra_positive_with_logo',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_real_time_accessibility',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_digital_travel_card',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_extra_accessible_travel',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_bike_sharing',m:1,c:1,issue:'Diverse icone bicycle: Positive, Negative...',fe:'Presente flusso ATM',s:'renamed'},
+  {t:'illustration_extra_city_center_area',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_contacts',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_fare_system',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_maps',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_mobility_information',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_on_street_parking',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_on_street_parking_comingsoon',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_park_and_ride',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_ticket_mgm',m:1,c:1,issue:'MISSING!!!',fe:'',s:'issue'},
+  {t:'illustration_extra_gift_orange',m:1,c:1,issue:'illustration/extra/giftWhite - no orange',fe:'',s:'renamed'},
+  {t:'illustration_servizi_conversione_tessera',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_servizi_tessera_fisica',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_extra_qrcode_scan',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_extra_fare_calculation',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_extra_trip_stop',m:0,c:0,issue:'Non trovo possibili equivalenze!',fe:'',s:'missing'},
+  {t:'illustration_extra_operation_success',m:1,c:1,issue:'illustration/extra/operationSuccess',fe:'',s:'renamed'},
+  {t:'illustration_extra_notifications_with_logo',m:1,c:1,issue:'Su Orbit sia su General che Extra.',fe:'',s:'renamed'},
+];
+
+const ICON_CATEGORIES = [
+  {id:'basic', label:'Icons Basic', data:ICONS_BASIC},
+  {id:'illustrated', label:'Icons Illustrated', data:ICONS_ILLUSTRATED},
+  {id:'colored', label:'Icons Colored', data:ICONS_COLORED},
+  {id:'illustrations', label:'Illustrations', data:ILLUSTRATIONS},
+];
+
 function makeBrandState() {
   const checks = {};
   [...SECTIONS_BS, ...SECTIONS_CDS].forEach(s => {
@@ -1040,6 +1178,98 @@ function WorkflowsView() {
   );
 }
 
+function IconsAuditView() {
+  const [activeCat, setActiveCat] = useState('basic');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const cat = ICON_CATEGORIES.find(c => c.id === activeCat);
+  const STATUS_META = {ok:{label:'OK',color:'var(--green)',bg:'var(--green-dim)'},missing:{label:'Missing',color:'var(--red)',bg:'var(--red-dim)'},renamed:{label:'Rinominata',color:'var(--yellow)',bg:'var(--yellow-dim)'},issue:{label:'Issue',color:'var(--orange)',bg:'var(--orange-dim)'},dupe:{label:'Doppione',color:'var(--text3)',bg:'var(--surface3)'}};
+
+  const filtered = cat ? cat.data.filter(row => {
+    if (statusFilter !== 'all' && row.s !== statusFilter) return false;
+    if (search && !row.t.toLowerCase().includes(search.toLowerCase()) && !row.issue.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }) : [];
+
+  const allData = ICON_CATEGORIES.flatMap(c => c.data);
+  const stats = {
+    total: allData.length,
+    ok: allData.filter(r => r.s === 'ok').length,
+    missing: allData.filter(r => r.s === 'missing').length,
+    renamed: allData.filter(r => r.s === 'renamed').length,
+    issue: allData.filter(r => r.s === 'issue').length,
+    dupe: allData.filter(r => r.s === 'dupe').length,
+  };
+
+  return (
+    React.createElement("div", {className:"page-content", style:{maxWidth:1100}},
+      React.createElement("div", {className:"page-header"},
+        React.createElement("h1", null, "\uD83D\uDD0D Icons + Illustrations Audit"),
+        React.createElement("p", null, "Controllo inconsistenze icone e illustrazioni: Design (Orbit) vs Sviluppo (MooneyGo / Comersud). Marzo 2026.")
+      ),
+      // Stats
+      React.createElement("div", {className:"dash-grid", style:{gridTemplateColumns:'repeat(6,1fr)',marginBottom:20}},
+        [{k:'total',l:'Totale',c:'var(--text)'},{k:'ok',l:'OK',c:'var(--green)'},{k:'renamed',l:'Rinominate',c:'var(--yellow)'},{k:'issue',l:'Issue',c:'var(--orange)'},{k:'missing',l:'Missing',c:'var(--red)'},{k:'dupe',l:'Doppioni',c:'var(--text3)'}].map(s =>
+          React.createElement("div", {key:s.k, className:"dash-stat", style:{cursor:s.k!=='total'?'pointer':undefined,borderColor:statusFilter===s.k?s.c:'var(--border)'}, onClick:() => s.k!=='total' ? setStatusFilter(statusFilter===s.k?'all':s.k) : setStatusFilter('all')},
+            React.createElement("div", {className:"ds-value", style:{color:s.c,fontSize:22}}, stats[s.k]),
+            React.createElement("div", {className:"ds-label"}, s.l)
+          )
+        )
+      ),
+      // Search
+      React.createElement("div", {style:{marginBottom:14}},
+        React.createElement("input", {type:"text", value:search, onChange:e => setSearch(e.target.value), placeholder:'Cerca token o issue...', className:"note-field", style:{minHeight:'auto',padding:'8px 12px',marginTop:0}})
+      ),
+      // Tabs
+      React.createElement("div", {className:"tabs"},
+        ICON_CATEGORIES.map(c => {
+          const cnt = c.data.length;
+          const miss = c.data.filter(r => r.s === 'missing' || r.s === 'issue').length;
+          return React.createElement("div", {key:c.id, className:'tab' + (activeCat === c.id ? ' active' : ''), onClick:() => setActiveCat(c.id)},
+            c.label + ' (' + cnt + ')', miss > 0 && React.createElement("span", {style:{marginLeft:6,fontSize:10,color:'var(--red)',fontWeight:600}}, miss + ' \u26A0')
+          );
+        })
+      ),
+      // Filter info
+      React.createElement("div", {style:{fontSize:12,color:'var(--text3)',marginBottom:10}},
+        filtered.length + ' di ' + (cat ? cat.data.length : 0) + ' token',
+        statusFilter !== 'all' && React.createElement("span", {style:{marginLeft:8,cursor:'pointer',color:'var(--accent)'},onClick:() => setStatusFilter('all')}, '\u2715 rimuovi filtro')
+      ),
+      // Table
+      React.createElement("div", {className:"card", style:{padding:0,overflow:'auto'}},
+        React.createElement("table", {className:"reg-table", style:{minWidth:700}},
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", {style:{width:50}}, "Stato"),
+              React.createElement("th", null, "Token"),
+              React.createElement("th", {style:{width:50,textAlign:'center'}}, "MG"),
+              React.createElement("th", {style:{width:50,textAlign:'center'}}, "CS"),
+              React.createElement("th", null, "Issue"),
+              React.createElement("th", null, "Frontend")
+            )
+          ),
+          React.createElement("tbody", null,
+            filtered.map((row, i) => {
+              const sm = STATUS_META[row.s] || STATUS_META.ok;
+              return React.createElement("tr", {key:i},
+                React.createElement("td", null, React.createElement("span", {style:{fontSize:10,padding:'2px 8px',borderRadius:10,background:sm.bg,color:sm.color,fontWeight:500,whiteSpace:'nowrap'}}, sm.label)),
+                React.createElement("td", null, React.createElement("code", {style:{fontFamily:'var(--mono)',fontSize:11,background:'var(--surface3)',padding:'1px 5px',borderRadius:3,wordBreak:'break-all'}}, row.t)),
+                React.createElement("td", {style:{textAlign:'center',fontSize:14}}, row.m === 1 ? '\u2705' : row.m === 0 ? '\u274C' : '\u26A0\uFE0F'),
+                React.createElement("td", {style:{textAlign:'center',fontSize:14}}, row.c === 1 ? '\u2705' : row.c === 0 ? '\u274C' : '\u26A0\uFE0F'),
+                React.createElement("td", {style:{fontSize:12,color:'var(--text2)',maxWidth:300}}, row.issue),
+                React.createElement("td", {style:{fontSize:12,color:row.fe && row.fe.includes('OK') ? 'var(--green)' : 'var(--text3)',maxWidth:200}}, row.fe || '\u2014')
+              );
+            }),
+            filtered.length === 0 && React.createElement("tr", null,
+              React.createElement("td", {colSpan:6, style:{textAlign:'center',padding:30,color:'var(--text3)'}}, 'Nessun risultato')
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
 function RegistryView() {
   return (
     React.createElement("div", {className:"page-content"},
@@ -1088,7 +1318,7 @@ function RegistryView() {
 function App() {
   const [page, setPage] = useState(() => {
     const h = window.location.hash.replace('#','');
-    return ['dashboard','checklist','cds','workflows','registry'].includes(h) ? h : 'dashboard';
+    return ['dashboard','checklist','cds','workflows','icons','registry'].includes(h) ? h : 'dashboard';
   });
   const [brandState, setBrandState] = useState(makeBrandState);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1096,7 +1326,7 @@ function App() {
   useEffect(() => {
     const onHash = () => {
       const h = window.location.hash.replace('#','');
-      if (['dashboard','checklist','cds','workflows','registry'].includes(h)) setPage(h);
+      if (['dashboard','checklist','cds','workflows','icons','registry'].includes(h)) setPage(h);
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
@@ -1119,6 +1349,7 @@ function App() {
       { id:'checklist', icon:'\u2611', label:'Checklist', badge:prog.totalPct + '%' },
       { id:'cds', icon:'\u270D', label:'Content Design System' },
       { id:'workflows', icon:'\u25C7', label:'Workflows', badge:WORKFLOWS.length },
+      { id:'icons', icon:'\uD83D\uDD0D', label:'Icons Audit' },
     ]},
   ];
 
@@ -1163,7 +1394,8 @@ function App() {
             page === 'dashboard' ? 'Dashboard' :
             page === 'checklist' ? 'Checklist' :
             page === 'cds' ? 'Content Design System' :
-            page === 'workflows' ? 'Workflows' : 'Registro'
+            page === 'workflows' ? 'Workflows' :
+            page === 'icons' ? 'Icons Audit' : 'Registro'
           ),
           React.createElement("div", {className:"topbar-right"},
             React.createElement("span", {className:"topbar-tag orbit"}, '\u26A1 Orbit linked'),
@@ -1174,6 +1406,7 @@ function App() {
         page === 'checklist' && React.createElement(ChecklistView, {brandState, setBrandState}),
         page === 'cds' && React.createElement(CDSView, null),
         page === 'workflows' && React.createElement(WorkflowsView, null),
+        page === 'icons' && React.createElement(IconsAuditView, null),
         page === 'registry' && React.createElement(RegistryView, null)
       )
     )
